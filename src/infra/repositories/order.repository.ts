@@ -1,28 +1,28 @@
-import { GetAllOrdersInput, IOrderRepository, OrderData } from '../../data/interfaces/repositories/order-repository.interface'
+import { GetAllOrdersInput, GetAllOrdersOutput, IOrderRepository, OrderOutput } from '../../interfaces'
 import { DynamoDBClientHelper } from '../dynamodb/dynamodb-helper'
-import { Order } from '../../domain/entities/order.types'
+import { Order } from '../../domain/models/order'
 
 export class OrderRepository implements IOrderRepository {
     
-  	async save(input: Order): Promise<OrderData> {
+  	async save(input: Order): Promise<OrderOutput> {
 		const client = new DynamoDBClientHelper()
 		const order = await client.save(input)
 		return order
   	}
 
-	async getById(id: string): Promise<OrderData> {
+	async getByOrderNumber(orderNumber: string): Promise<OrderOutput> {
 		const client = new DynamoDBClientHelper()
-		const order = await client.getById(id)
+		const order = await client.getByOrderNumber(orderNumber)
 		return order
 	}
 
-	// async getAll(input: GetAllOrdersInput): Promise<OrderData[] | null > {
-	// 	const client = new DynamoDBClientHelper()
-	// 	const orders = await client.getAll(input)
-	// 	return orders
-	// }
+	async getAll(input: GetAllOrdersInput): Promise<GetAllOrdersOutput> {
+		const client = new DynamoDBClientHelper()
+		const orders = await client.getAll(input)
+		return orders
+	}
 
-	async updateStatus(id: string, status: string): Promise<OrderData> {
+	async updateStatus(id: string, status: string): Promise<OrderOutput> {
 		const client = new DynamoDBClientHelper()
 		const order = await client.updateStatus(id, status)
 		return order

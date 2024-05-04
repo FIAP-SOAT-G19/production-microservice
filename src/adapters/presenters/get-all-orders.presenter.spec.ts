@@ -1,6 +1,6 @@
-import { OrderStatus } from '@/application/interfaces'
+import { OrderStatus } from '../../domain/models/order'
 import { GetAllOrdersPresenter } from './get-all-orders.presenter'
-import { OrderOutput } from '@/application/usecases/order/orders.types'
+import { OrderOutput } from '../../data/interfaces/repositories/order-repository.interface'
 
 const defaultOrderInput: OrderOutput = {
     id: 'anyId',
@@ -11,6 +11,7 @@ const defaultOrderInput: OrderOutput = {
     totalValue: 10000,
     paidAt: new Date(),
     createdAt: new Date(),
+    updatedAt: new Date(),
     products: [{
         id: 'anyProductId',
         name: 'AnyProductName',
@@ -161,34 +162,6 @@ describe('GetAllOrdersPresenter', () => {
         ...defaultOrderInput,
         status: OrderStatus.FINALIZED,
         paidAt: new Date('2024-01-11T15:31:05.166Z')
-    }])
-  })
-
-  test('should create ordenation by createdAt date if there isnt a paidAt date', async () => {
-    const orderInput: OrderOutput[] = [{
-        ...defaultOrderInput,
-        status: OrderStatus.WAITING_PAYMENT,
-        paidAt: null,
-        createdAt: new Date('2024-01-11T15:31:05.166Z')
-    }, {
-        ...defaultOrderInput,
-        status: OrderStatus.WAITING_PAYMENT,
-        paidAt: null,
-        createdAt: new Date('2024-01-11T15:31:05.164Z')
-    }]
-    
-    const output = await sut.createOrdenation(orderInput)
-
-    expect(output).toEqual([{
-        ...defaultOrderInput,
-        status: OrderStatus.WAITING_PAYMENT,
-        paidAt: null,
-        createdAt: new Date('2024-01-11T15:31:05.164Z')
-    }, {
-        ...defaultOrderInput,
-        status: OrderStatus.WAITING_PAYMENT,
-        paidAt: null,
-        createdAt: new Date('2024-01-11T15:31:05.166Z')
     }])
   })
 

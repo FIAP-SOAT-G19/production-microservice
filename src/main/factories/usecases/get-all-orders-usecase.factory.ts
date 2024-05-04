@@ -1,7 +1,7 @@
-import { GetAllOrdersUseCase } from '@/application/usecases/order/get-all-orders.usecase'
-import { OrderRepository } from '../../../infra/database/repositories/order.repository'
-import { GetAllOrdersGateway } from '@/infra/adapters/gateways/order/get-all-orders.gateway'
-import { GetAllOrdersPresenter } from '@/infra/adapters/presenters/order/get-all-orders.presenter'
+import { GetAllOrdersUseCase } from '../../../domain/usecases'
+import { OrderRepository } from '../../../infra/repositories/order.repository'
+import { GetAllOrdersGateway } from '../../../adapters/gateways'
+import { GetAllOrdersPresenter } from '../../../adapters/presenters/get-all-orders.presenter'
 
 export const makeGetAllOrdersUseCase = (): GetAllOrdersUseCase => {
   const gateway = new GetAllOrdersGateway(new OrderRepository())

@@ -1,6 +1,0 @@
-export * from './create-order.interface'
-export * from './delete-order.interface'
-export * from './get-all-orders.interface'
-export * from './get-order-by-number.interface'
-export * from './get-order-status.interface'
-export * from './update-order-status.interface'

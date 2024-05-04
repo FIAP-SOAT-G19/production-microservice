@@ -1,4 +1,4 @@
-import { IGetAllOrdersUseCase } from '@/application/interfaces'
+import { IGetAllOrdersUseCase } from '@/data/interfaces'
 import { OrderOutput } from '@/application/usecases/order/orders.types'
 import { HttpRequest, success, serverError, InvalidParamError, badRequest } from '@/infra/shared'
 import { GetAllOrdersController } from './get-all-orders.controller'

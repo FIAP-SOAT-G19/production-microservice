@@ -1,9 +1,9 @@
 export enum OrderStatus {
-    received = 'received',
-    InPreparation = 'InPreparation',
-    prepared = 'prepared',
-    finalized = 'finalized',  
-    canceled = 'canceled'
+    RECEIVED = 'received',
+    IN_PREPARATION = 'InPreparation',
+    PREPARED = 'prepared',
+    FINALIZED = 'finalized',  
+    CANCELED = 'canceled'
 }
 
 export interface Order {
@@ -15,7 +15,7 @@ export interface Order {
     totalValue: number
     paidAt: Date | null
     createdAt: Date
-    updatedAt: Date
+    updatedAt: Date | null
     client: Client | null
     products: OrderProduct[]
 }

@@ -1,4 +1,4 @@
-import { ICreateOrderUseCase } from '@/application/interfaces'
+import { ICreateOrderUseCase } from '@/data/interfaces'
 import { HttpRequest, success, serverError, InvalidParamError, badRequest } from '@/infra/shared'
 import { CreateOrderController } from './create-order.controller'
 import { mock } from 'jest-mock-extended'

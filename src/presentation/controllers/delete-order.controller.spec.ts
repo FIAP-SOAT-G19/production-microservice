@@ -1,4 +1,4 @@
-import { IDeleteOrderUseCase } from '@/application/interfaces'
+import { IDeleteOrderUseCase } from '@/data/interfaces'
 import { HttpRequest, serverError, MissingParamError, badRequest, success } from '@/infra/shared'
 import { DeleteOrderController } from './delete-order.controller'
 import { mock } from 'jest-mock-extended'

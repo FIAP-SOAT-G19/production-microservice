@@ -1,6 +1,6 @@
-import { DeleteOrderUseCase } from '@/application/usecases/order/delete-order.usecase'
-import { OrderRepository } from '../../../infra/database/repositories/order.repository'
-import { DeleteOrderGateway } from '@/infra/adapters/gateways/order/delete-order-gateway'
+import { DeleteOrderUseCase } from '../../../domain/usecases'
+import { OrderRepository } from '../../../infra/repositories/order.repository'
+import { DeleteOrderGateway } from '../../../adapters/gateways'
 
 export const makeDeleteOrderUseCase = (): DeleteOrderUseCase => {
   const gateway = new DeleteOrderGateway(new OrderRepository())

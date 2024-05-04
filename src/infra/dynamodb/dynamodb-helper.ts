@@ -1,7 +1,8 @@
 import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { Order } from '../../domain/entities/order.types';
+import { Order } from '../../domain/models/order';
 import { SaveOrderOutput, GetOrderOutput, FindAllOrdersOutput, UpdateOrderOutput, DeleteOrderOutput } from './dynamodb-types';
+import { OrderOutput, GetAllOrdersInput, GetAllOrdersOutput } from '@/interfaces';
 
 export class DynamoDBClientHelper {
     private readonly docClient: DynamoDBDocumentClient
@@ -18,7 +19,7 @@ export class DynamoDBClientHelper {
         return docClient
     }
 
-    async save(orderDTO: Order): Promise<Order | null> {
+    async save(orderDTO: Order): Promise<OrderOutput> {
     
         const command = new PutCommand({
             TableName: process.env.TABLE_NAME as string,
@@ -29,10 +30,10 @@ export class DynamoDBClientHelper {
         return response || null;
     }
 
-    async getById(id: string): Promise<Order | null> {
+    async getByOrderNumber(orderNumber: string): Promise<OrderOutput> {
         const command = new GetCommand({
             TableName: process.env.TABLE_NAME as string,
-            Key: { id }
+            Key: { orderNumber }
         })
 
         const { Item: response } = await this.docClient.send(command) as GetOrderOutput<Order>
@@ -40,30 +41,30 @@ export class DynamoDBClientHelper {
         return response || null
     }
 
-    // async getAll(params: string): Promise<Order | null> {
-    //     let queryString: string = ''
-    //     let queryValues: any = {}
+    async getAll(params: GetAllOrdersInput): Promise<GetAllOrdersOutput> {
+        let queryString: string = ''
+        let queryValues: any = {}
 
-    //     if (params.status) {
-    //         queryString = 'status = :status'
-    //         queryValues = { ':status': params.status }
-    //     } else {
-    //         queryString = '(status = :received OR status = :InPreparation OR status = :prepared)'
-    //         queryValues = { ':received': 'received', ':InPreparation': 'InPreparation', ':prepared': 'prepared' }
-    //     }
+        if (params.status) {
+            queryString = 'status = :status'
+            queryValues = { ':status': params.status }
+        } else {
+            queryString = '(status = :received OR status = :InPreparation OR status = :prepared)'
+            queryValues = { ':received': 'received', ':InPreparation': 'InPreparation', ':prepared': 'prepared' }
+        }
 
-    //     const command = new QueryCommand({
-    //         TableName: process.env.TABLE_NAME as string,
-    //         KeyConditionExpression: queryString,
-    //         ExpressionAttributeValues: queryValues,
-    //         ConsistentRead: true
-    //     })
+        const command = new QueryCommand({
+            TableName: process.env.TABLE_NAME as string,
+            KeyConditionExpression: queryString,
+            ExpressionAttributeValues: queryValues,
+            ConsistentRead: true
+        })
 
-    //     const { Items: response } = await this.docClient.send(command) as FindAllOutput<Order>
-    //     return response || null;
-    // }
+        const { Items: response } = await this.docClient.send(command) as FindAllOrdersOutput<GetAllOrdersOutput>
+        return response || null;
+    }
 
-    async updateStatus(id: string, status: string): Promise<Order | null> {
+    async updateStatus(id: string, status: string): Promise<OrderOutput> {
 
         const command = new UpdateCommand({
             TableName: process.env.TABLE_NAME as string,
@@ -81,7 +82,7 @@ export class DynamoDBClientHelper {
 
     }
 
-    async delete(id: string): Promise<Order | null> {
+    async delete(id: string): Promise<OrderOutput> {
         const command = new DeleteCommand({
             TableName: process.env.TABLE_NAME as string,
             Key: { id }

@@ -1,4 +1,10 @@
-import { PutCommandOutput, GetCommandOutput, QueryCommandOutput, UpdateCommandOutput, DeleteCommandOutput } from '@aws-sdk/lib-dynamodb';
+import { 
+    PutCommandOutput, 
+    GetCommandOutput, 
+    QueryCommandOutput, 
+    UpdateCommandOutput, 
+    DeleteCommandOutput 
+} from '@aws-sdk/lib-dynamodb';
 
 export type SaveOrderOutput<T> = Omit<PutCommandOutput, 'Attributes'> & { 
     Attributes?: T 

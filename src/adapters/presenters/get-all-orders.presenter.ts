@@ -1,8 +1,10 @@
-import { GetAllOrdersOutput, IGetAllOrdersPresenter, OrderStatus } from '@/application/interfaces'
-import { OrderOutput } from '@/application/usecases/order/orders.types'
+import { IGetAllOrdersPresenter, OrderOutput, GetAllOrdersOutput } from '../../interfaces'
+import { OrderStatus } from '../../domain/models/order'
 
 export class GetAllOrdersPresenter implements IGetAllOrdersPresenter {
+
   createOrdenation(input: GetAllOrdersOutput): GetAllOrdersOutput {
+
     if (input?.length) {
       const preparedOrders = input.filter(order => { return order?.status === OrderStatus.PREPARED })
       const inPreparationOrders = input.filter(order => { return order?.status === OrderStatus.IN_PREPARATION })

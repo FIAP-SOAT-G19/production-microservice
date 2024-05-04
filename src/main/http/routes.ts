@@ -1,25 +1,23 @@
 import { Router } from 'express'
-import { expressAdapter } from '../adapters/tools/http/express.adapter'
+import { expressRouteAdapter } from '../../adapters/tools/http/express.adapter'
 import { makeCreateOrderController } from '../factories/controllers/create-order-controller.factory'
 import { makeDeleteOrderController } from '../factories/controllers/delete-order-controller.factory'
 import { makeGetAllOrdersController } from '../factories/controllers/get-all-orders-controller.factory'
 import { makeGetOrderByNumberController } from '../factories/controllers/get-order-by-number-controller.factory'
-import { makeGetOrderStatusController } from '../factories/controllers/get-order-controller.factory'
 import { makeUpdateOrderStatusUseCaseController } from '../factories/controllers/update-order-status-controller.factory'
 
 const router = Router()
 
-router.get('/healthcheck', expressAdapter(makeHealthcheckController()))
-router.get('/livenessProbe', expressAdapter(makeLivenessProbeController()))
-router.get('/readinessProbe', expressAdapter(makeReadinessProbeController()))
+// router.get('/healthcheck', expressRouteAdapter(makeHealthcheckController()))
+// router.get('/livenessProbe', expressRouteAdapter(makeLivenessProbeController()))
+// router.get('/readinessProbe', expressRouteAdapter(makeReadinessProbeController()))
 
 // Orders
-router.delete('/orders/:orderNumber', expressAdapter(makeDeleteOrderController()))
-router.patch('/orders/:orderNumber', expressAdapter(makeUpdateOrderStatusUseCaseController()))
-router.get('/orders/:orderNumber', expressAdapter(makeGetOrderByNumberController()))
-router.get('/orders/:orderNumber/status', expressAdapter(makeGetOrderStatusController()))
-router.get('/orders', expressAdapter(makeGetAllOrdersController()))
-router.post('/orders', expressAdapter(makeCreateOrderController()))
+router.delete('/orders/:orderNumber', expressRouteAdapter(makeDeleteOrderController()))
+router.patch('/orders/:orderNumber', expressRouteAdapter(makeUpdateOrderStatusUseCaseController()))
+router.get('/orders/:orderNumber', expressRouteAdapter(makeGetOrderByNumberController()))
+router.get('/orders', expressRouteAdapter(makeGetAllOrdersController()))
+router.post('/orders', expressRouteAdapter(makeCreateOrderController()))
 
 
 export { router }

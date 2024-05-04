@@ -1,4 +1,4 @@
-import { IGetOrderByNumberUseCase } from '@/application/interfaces'
+import { IGetOrderByNumberUseCase } from '@/data/interfaces'
 import { OrderOutput } from '@/application/usecases/order/orders.types'
 import { HttpRequest, success, serverError, InvalidParamError, badRequest } from '@/infra/shared'
 import { GetOrderByNumberController } from './get-order-by-number.controller'

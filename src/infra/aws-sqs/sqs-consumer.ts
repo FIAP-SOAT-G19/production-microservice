@@ -1,4 +1,4 @@
-import { IQueueConsumer } from '@/data/interfaces/queue-service/queue-consumer.interface'
+import { IMessageConsumer } from '../../interfaces'
 import AWS from 'aws-sdk'
 
 const AWSAccessKey = process.env.AWS_ACCESS_KEY
@@ -11,7 +11,7 @@ interface ReceiveMessageDTO {
     status: string
 }
 
-class SQSQueueConsumer implements IQueueConsumer {
+class SQSMessageConsumer implements IMessageConsumer {
 
     async execute(): Promise<void> {
     

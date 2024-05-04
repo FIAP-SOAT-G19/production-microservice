@@ -1,15 +1,11 @@
-import { IController } from '@/application/interfaces'
-import { RequestsRepository } from '@/infra/database/repositories/request.repository'
-import { HttpRequest, HttpResponse } from '@/infra/shared/types'
+import { IController, HttpRequest, HttpResponse } from '../../../interfaces'
+// import { prismaClient } from '@/adapters/gateways/prisma.client'
 import { Request, Response } from 'express'
-import { UUIDGeneratorAdapter } from '../uuid/uuid-generator'
-import { obfuscateValue } from '@/infra/shared'
+// import { Cryptodapter } from '../crypto/crypto.adapter'
+// import { obfuscateValue } from '@/shared/helpers/obfuscate-value.helper'
 
-export const expressAdapter = (controller: IController) => {
+export const expressRouteAdapter = (controller: IController) => {
   return async (req: Request, res: Response) => {
-    const requestRepository = new RequestsRepository()
-    const uuidGenerator = new UUIDGeneratorAdapter()
-
     const input: HttpRequest = {
       params: req?.params,
       body: req?.body,
@@ -20,22 +16,24 @@ export const expressAdapter = (controller: IController) => {
 
     const output = (statusCode >= 200 && statusCode < 500) ? body : { error: body.message }
 
-    if (canLog(req.url)) {
-      await requestRepository.create({
-        id: uuidGenerator.generate(),
-        method: req.method,
-        input: JSON.stringify(obfuscateValue({ ...input.body })),
-        route: req.url,
-        createdAt: new Date(),
-        status: statusCode,
-        output: JSON.stringify(output)
-      })
-    }
+    // await logRequest(req, input, statusCode, output)
 
     res.status(statusCode).json(output)
   }
 }
 
-const canLog = (url: string): boolean => {
-  return !['/readinessProbe', '/livenessProbe'].includes(url)
-}
+// const logRequest = async (req: Request, input: any, statusCode: number, output: any): Promise<void> => {
+//   const crypto = new Cryptodapter()
+//   await prismaClient.request.create({
+//     data: {
+//       id: crypto.generateUUID(),
+//       method: req.method,
+//       input: JSON.stringify(obfuscateValue({ ...input.body })),
+//       route: req.url,
+//       createdAt: new Date(),
+//       status: statusCode,
+//       output: JSON.stringify(output),
+//       updatedAt: new Date()
+//     }
+//   })
+// }

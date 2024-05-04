@@ -1,4 +1,4 @@
-import { HttpResponse } from '../types'
+import { HttpResponse } from '../../interfaces'
 
 export const success = (statusCode: number, body: any): HttpResponse => ({
   statusCode,

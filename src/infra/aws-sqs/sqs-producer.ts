@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk'
 
-import { IMessageProducer } from '../../data/interfaces/queue-service/message-producer.interface'
-import { Order } from '../../domain/entities/order.types'
+import { IMessageProducer } from '../../interfaces'
+import { Order } from '../../domain/models/order'
 
 const AWSAccessKey = process.env.AWS_ACCESS_KEY
 const AWSSecretKey = process.env.AWS_SECRET_KEY
