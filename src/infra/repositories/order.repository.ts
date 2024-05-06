@@ -4,7 +4,7 @@ import { Order } from '../../domain/models/order'
 
 export class OrderRepository implements IOrderRepository {
     
-  	async save(input: Order): Promise<OrderOutput> {
+  	async save(input: Order): Promise<Order> {
 		const client = new DynamoDBClientHelper()
 		const order = await client.save(input)
 		return order

@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 
 export type SaveOrderOutput<T> = Omit<PutCommandOutput, 'Attributes'> & { 
-    Attributes?: T 
+    Attributes: T 
 };
 
 export type GetOrderOutput<T> = Omit<GetCommandOutput, 'Item'> & { 

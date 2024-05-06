@@ -1,25 +1,26 @@
-import { IMessageConsumer } from '../../interfaces'
+import { ICreateOrderController, IMessageConsumer } from '../../interfaces'
 import AWS from 'aws-sdk'
 
-const AWSAccessKey = process.env.AWS_ACCESS_KEY
-const AWSSecretKey = process.env.AWS_SECRET_KEY
-const AWSRegion = process.env.AWS_REGION
-const SQSUrl = process.env.CONSUMER_SQS_URL as string
+export class SQSMessageConsumer implements IMessageConsumer {
 
-interface ReceiveMessageDTO {
-    orderId: string,
-    status: string
-}
+    constructor(private readonly createOrderController: ICreateOrderController) {}
 
-class SQSMessageConsumer implements IMessageConsumer {
+    private createSQS(): AWS.SQS {
+        return new AWS.SQS({ apiVersion: "2012-11-05" });
+    }
 
-    async execute(): Promise<void> {
-    
+    private config(): void {
+        const AWSRegion = process.env.AWS_REGION as string
         AWS.config.update({ region: AWSRegion });
+    }
+    
+    async execute(): Promise<void> {
         
-        const sqs = new AWS.SQS({ apiVersion: "2012-11-05" });
+        this.config()
+
+        const sqs = this.createSQS()
         
-        var queueURL = SQSUrl;
+        const queueURL = process.env.CONSUMER_SQS_URL as string
         
         var params = {
             AttributeNames: ["SentTimestamp"],
@@ -30,24 +31,15 @@ class SQSMessageConsumer implements IMessageConsumer {
             WaitTimeSeconds: 0,
         };
         
-        sqs.receiveMessage(params, function (err, data) {
+        const messages = sqs.receiveMessage(params, function (err, data) {
             
-            if (err) {
-                console.log("Receive Error", err);
-            } else if (data.Messages) {
-                const deleteParams = {
-                    QueueUrl: queueURL,
-                    ReceiptHandle: data.Messages[0].ReceiptHandle as string,
-                };
-
-                sqs.deleteMessage(deleteParams, function (err, data) {
-                    if (err) {
-                        console.log("Delete Error", err);
-                    } else {
-                        console.log("Message Deleted", data);
-                    }
-                });
-            }
+            // if (err) {
+            //     console.log("Receive Error", err);
+            // } else if (data.Messages) {
+            // }
+            return data.Messages
         });
+
+        await this.createOrderController.execute(messages)
     }
 }

@@ -1,14 +1,13 @@
-import { IController, ICreateOrderUseCase, HttpRequest, HttpResponse } from '@/interfaces'
+import { ICreateOrderController, ICreateOrderUseCase, HttpRequest, HttpResponse } from '@/interfaces'
 import { success } from '../helpers'
 import { handleError } from '../errors/handle-error'
 
-export class CreateOrderController implements IController {
+export class CreateOrderController implements ICreateOrderController {
   constructor(private readonly createOrderUseCase: ICreateOrderUseCase) {}
 
-  async execute (input: HttpRequest): Promise<HttpResponse> {
+  async execute (input: any): Promise<void | HttpResponse> {
     try {
-      const output = await this.createOrderUseCase.execute(input.body)
-      return success(201, output)
+      await this.createOrderUseCase.execute(input.body)
       
     } catch (error: any) {
       return handleError(error)

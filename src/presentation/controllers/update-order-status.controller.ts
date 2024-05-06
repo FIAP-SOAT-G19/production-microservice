@@ -8,10 +8,10 @@ export class UpdateOrderStatusController implements IController {
   async execute(input: HttpRequest): Promise<HttpResponse> {
     const { orderNumber, status } = input.params
     try {
-      await this.updateOrderStatusUseCase.execute(
+      await this.updateOrderStatusUseCase.execute({
         orderNumber,
         status
-      )
+      })
       return success(204, null)
       
     } catch (error: any) {

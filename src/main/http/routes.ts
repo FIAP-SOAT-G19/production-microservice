@@ -17,7 +17,5 @@ router.delete('/orders/:orderNumber', expressRouteAdapter(makeDeleteOrderControl
 router.patch('/orders/:orderNumber', expressRouteAdapter(makeUpdateOrderStatusUseCaseController()))
 router.get('/orders/:orderNumber', expressRouteAdapter(makeGetOrderByNumberController()))
 router.get('/orders', expressRouteAdapter(makeGetAllOrdersController()))
-router.post('/orders', expressRouteAdapter(makeCreateOrderController()))
-
 
 export { router }

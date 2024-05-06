@@ -7,7 +7,7 @@ export class UpdateOrderStatusGateway implements IUpdateOrderStatusGateway {
     return await this.orderRepository.updateStatus(id, status)
   }
 
-  // async getByOrderNumber (orderNumber: string): Promise<OrderOutput> {
-  //   return await this.orderRepository.getByOrderNumber(orderNumber)
-  // }
+  async getByOrderNumber (orderNumber: string): Promise<OrderOutput> {
+    return await this.orderRepository.getByOrderNumber(orderNumber)
+  }
 }

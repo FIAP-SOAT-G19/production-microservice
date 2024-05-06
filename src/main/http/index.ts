@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
 import { router } from './routes'
+import { makeCreateOrderMessage } from '../factories/message-service/create-order-message.factory'
 // import swaggerDocument from '@/infra/docs/swagger.json'
 
 const app = express()
@@ -13,5 +14,7 @@ app.use('/api/v1', router)
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 const port = process.env.PORT ?? 3000
+
+makeCreateOrderMessage()
 
 app.listen(port, () => { console.log(`Server running at port ${port}`) })

@@ -1,7 +1,7 @@
 import { Order } from '../../domain/models/order'
 
 export interface IOrderRepository {
-    save: (input: Order) => Promise<OrderOutput>
+    save: (input: Order) => Promise<Order>
     getByOrderNumber: (orderNumber: string) => Promise<OrderOutput>
     getAll: (input: GetAllOrdersInput) => Promise<GetAllOrdersOutput>
     updateStatus: (id: string, status: string) => Promise<OrderOutput>
@@ -20,4 +20,4 @@ export type GetAllOrdersInput = {
     createdAtEndDate?: string
 }
 
-export type GetAllOrdersOutput = OrderOutput[] | null
+export type GetAllOrdersOutput = Order[] | null

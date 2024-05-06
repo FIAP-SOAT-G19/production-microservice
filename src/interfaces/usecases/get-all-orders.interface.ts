@@ -6,8 +6,8 @@ export interface IGetAllOrdersUseCase {
 
 export namespace IGetAllOrdersUseCase {
   export type Input = {
-    clientId?: string
-    clientDocument?: string
+    // clientId?: string
+    // clientDocument?: string
     status?: string
     paidAtInitialDate?: string
     paidAtEndDate?: string
@@ -15,5 +15,5 @@ export namespace IGetAllOrdersUseCase {
     createdAtEndDate?: string
   }
 
-  export type Output = Order [] | null
+  export type Output = Order[] | null
 }

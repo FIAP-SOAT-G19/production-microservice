@@ -1,5 +1,5 @@
-import { IGetAllOrdersPresenter, OrderOutput, GetAllOrdersOutput } from '../../interfaces'
-import { OrderStatus } from '../../domain/models/order'
+import { IGetAllOrdersPresenter, GetAllOrdersOutput } from '../../interfaces'
+import { OrderStatus, Order } from '../../domain/models/order'
 
 export class GetAllOrdersPresenter implements IGetAllOrdersPresenter {
 
@@ -10,7 +10,7 @@ export class GetAllOrdersPresenter implements IGetAllOrdersPresenter {
       const inPreparationOrders = input.filter(order => { return order?.status === OrderStatus.IN_PREPARATION })
       const receivedOrders = input.filter(order => { return order?.status === OrderStatus.RECEIVED })
 
-      const result: OrderOutput[] = []
+      const result: Order[] = []
 
       const hasOtherStatusOrders = !preparedOrders.length && !inPreparationOrders.length && !receivedOrders.length
       if (hasOtherStatusOrders) {
@@ -29,7 +29,7 @@ export class GetAllOrdersPresenter implements IGetAllOrdersPresenter {
     return null
   }
 
-  private sortByDate(input: OrderOutput[]): OrderOutput[] {
+  private sortByDate(input: Order[]): Order[] {
     return input.sort(function (currentItem, nextItem) {
       const currentItemInMs = currentItem?.paidAt?.valueOf() || currentItem?.createdAt?.valueOf() || 0
       const nextItemInMs = nextItem?.paidAt?.valueOf() || nextItem?.createdAt?.valueOf() || 0

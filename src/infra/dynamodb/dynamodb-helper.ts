@@ -19,7 +19,7 @@ export class DynamoDBClientHelper {
         return docClient
     }
 
-    async save(orderDTO: Order): Promise<OrderOutput> {
+    async save(orderDTO: Order): Promise<Order> {
     
         const command = new PutCommand({
             TableName: process.env.TABLE_NAME as string,
@@ -27,7 +27,7 @@ export class DynamoDBClientHelper {
         });
         
         const { Attributes: response } = await this.docClient.send(command) as SaveOrderOutput<Order>
-        return response || null;
+        return response;
     }
 
     async getByOrderNumber(orderNumber: string): Promise<OrderOutput> {
