@@ -1,20 +1,25 @@
-import '../shared/config/module-alias'
+import '../../presentation/helpers/module-alias'
 import express from 'express'
 import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
 import { router } from './routes'
-import { makeCreateOrderMessage } from '../factories/message-service/create-order-message.factory'
+import { messagePollerFactory } from '../factories/message-service/message-poller.factory'
 // import swaggerDocument from '@/infra/docs/swagger.json'
 
-const app = express()
+const start = async(): Promise<void> => {
+    const app = express()
 
-app.use(cors())
-app.use(express.json())
-app.use('/api/v1', router)
+    app.use(cors())
+    app.use(express.json())
+    app.use('/api/v1', router)
+
+    const port = process.env.PORT ?? 3000
+    app.listen(port, () => { console.log(`Server running at port ${port}`) })
+
+    await messagePollerFactory()
+}
+
+void start()
+
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-const port = process.env.PORT ?? 3000
-
-makeCreateOrderMessage()
-
-app.listen(port, () => { console.log(`Server running at port ${port}`) })

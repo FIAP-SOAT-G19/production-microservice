@@ -55,6 +55,10 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
   }
 
   private async sendMessage(input: Order): Promise<void> {
-    await this.gateway.sendMessage(input)
+    const queueName = process.env.SEND_MESSAGE_QUEUE as string
+    const messageBody = JSON.stringify(input)
+    const messageId = input.orderNumber
+
+    await this.gateway.sendMessage(queueName, messageBody, messageId)
   }
 }
