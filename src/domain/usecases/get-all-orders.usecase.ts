@@ -1,5 +1,5 @@
 import { IGetAllOrdersUseCase, IGetAllOrdersGateway, IGetAllOrdersPresenter } from '@/interfaces'
-import { InvalidParamError } from '../../presentation/errors'
+import { InvalidParamError } from '@/presentation/errors'
 import { OrderStatus } from '../models/order'
 
 export class GetAllOrdersUseCase implements IGetAllOrdersUseCase {

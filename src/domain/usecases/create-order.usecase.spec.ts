@@ -1,4 +1,4 @@
-import { IUUIDGenerator, ISchemaValidator, ICreateOrderGateway } from '../../data/interfaces/usecases/order'
+import { IUUIDGenerator, ISchemaValidator, ICreateOrderGateway } from '@/data/interfaces/usecases/order'
 import { InvalidParamError } from '@/infra/shared'
 import { CreateOrderUseCase } from './create-order.usecase'
 import { mock } from 'jest-mock-extended'

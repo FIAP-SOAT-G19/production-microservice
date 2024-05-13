@@ -1,10 +1,11 @@
 import { Router } from 'express'
-import { expressRouteAdapter } from '../../adapters/tools/http/express.adapter'
-import { makeCreateOrderController } from '../factories/controllers/create-order-controller.factory'
-import { makeDeleteOrderController } from '../factories/controllers/delete-order-controller.factory'
-import { makeGetAllOrdersController } from '../factories/controllers/get-all-orders-controller.factory'
-import { makeGetOrderByNumberController } from '../factories/controllers/get-order-by-number-controller.factory'
-import { makeUpdateOrderStatusUseCaseController } from '../factories/controllers/update-order-status-controller.factory'
+import { expressRouteAdapter } from '@/adapters/tools/http/express.adapter'
+import { 
+    makeDeleteOrderController,
+    makeGetAllOrdersController,
+    makeGetOrderByNumberController,
+    makeUpdateOrderStatusUseCaseController
+} from '../factories'
 
 const router = Router()
 

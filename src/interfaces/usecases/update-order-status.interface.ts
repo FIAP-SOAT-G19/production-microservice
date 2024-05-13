@@ -1,4 +1,4 @@
-import { OrderStatus } from '../../domain/models/order'
+import { OrderStatus } from '@/domain/models/order'
 
 export interface IUpdateOrderStatusUseCase {
   execute: (input: IUpdateOrderStatusUseCase.Input) => Promise<void>

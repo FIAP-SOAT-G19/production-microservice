@@ -1,4 +1,4 @@
-import { IOrderRepository, OrderOutput, IGetOrderByNumberGateway } from '../../interfaces'
+import { IOrderRepository, OrderOutput, IGetOrderByNumberGateway } from '@/interfaces'
 
 export class GetOrderByNumberGateway implements IGetOrderByNumberGateway {
   constructor(private readonly orderRepository: IOrderRepository) {}

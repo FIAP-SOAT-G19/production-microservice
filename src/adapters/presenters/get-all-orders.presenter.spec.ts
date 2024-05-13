@@ -1,6 +1,6 @@
-import { OrderStatus } from '../../domain/models/order'
+import { OrderStatus } from '@/domain/models/order'
 import { GetAllOrdersPresenter } from './get-all-orders.presenter'
-import { OrderOutput } from '../../data/interfaces/repositories/order-repository.interface'
+import { OrderOutput } from '@/data/interfaces/repositories/order-repository.interface'
 
 const defaultOrderInput: OrderOutput = {
     id: 'anyId',

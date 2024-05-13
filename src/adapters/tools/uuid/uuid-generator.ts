@@ -1,5 +1,5 @@
 
-import { IUUIDGenerator } from '../../../interfaces'
+import { IUUIDGenerator } from '@/interfaces'
 import { randomUUID } from 'crypto'
 
 export class UUIDGeneratorAdapter implements IUUIDGenerator {

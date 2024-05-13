@@ -1,6 +1,6 @@
 import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
-import { Order } from '../../domain/models/order';
+import { Order } from '@/domain/models/order';
 import { SaveOrderOutput, GetOrderOutput, FindAllOrdersOutput, UpdateOrderOutput, DeleteOrderOutput } from './dynamodb-types';
 import { OrderOutput, GetAllOrdersInput, GetAllOrdersOutput } from '@/interfaces';
 

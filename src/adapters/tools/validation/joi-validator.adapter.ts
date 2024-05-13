@@ -1,5 +1,5 @@
 
-import { ISchemaValidator } from '../../../interfaces'
+import { ISchemaValidator } from '@/interfaces'
 import * as schemas from './schemas'
 
 export class JoiValidatorSchemaAdapter implements ISchemaValidator {

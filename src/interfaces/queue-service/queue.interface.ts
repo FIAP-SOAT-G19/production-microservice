@@ -1,4 +1,4 @@
-import { Order } from '../../domain/models/order';
+import { Order } from '@/domain/models/order';
 
 export interface IQueueService {
     sendMessage: (queueName: string, message: string, messageGroupId: string, messageDeduplicationId: string) => Promise<boolean>

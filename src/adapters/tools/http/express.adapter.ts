@@ -1,7 +1,7 @@
-import { IController, HttpRequest, HttpResponse } from '../../../interfaces'
+import { IController, HttpRequest, HttpResponse } from '@/interfaces'
 // import { prismaClient } from '@/adapters/gateways/prisma.client'
 import { Request, Response } from 'express'
-// import { Cryptodapter } from '../crypto/crypto.adapter'
+// import { Cryptodapter } from '@/crypto/crypto.adapter'
 // import { obfuscateValue } from '@/shared/helpers/obfuscate-value.helper'
 
 export const expressRouteAdapter = (controller: IController) => {

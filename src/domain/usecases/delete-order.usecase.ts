@@ -1,5 +1,5 @@
-import { IDeleteOrderUseCase, IDeleteOrderGateway } from '../../interfaces'
-import { MissingParamError, InvalidParamError } from '../../presentation/errors'
+import { IDeleteOrderUseCase, IDeleteOrderGateway } from '@/interfaces'
+import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { OrderStatus } from '../models/order'
 
 export class DeleteOrderUseCase implements IDeleteOrderUseCase {

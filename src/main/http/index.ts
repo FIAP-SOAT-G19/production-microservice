@@ -1,9 +1,9 @@
-import '../../presentation/helpers/module-alias'
+import '@/presentation/module-alias'
 import express from 'express'
 import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
 import { router } from './routes'
-import { messagePollerFactory } from '../factories/message-service/message-poller.factory'
+import { messagePollerFactory } from '../factories'
 // import swaggerDocument from '@/infra/docs/swagger.json'
 
 const start = async(): Promise<void> => {

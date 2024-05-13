@@ -1,4 +1,4 @@
-import { GetAllOrdersInput, GetAllOrdersOutput } from '../repositories/order-repository.interface'
+import { GetAllOrdersInput, GetAllOrdersOutput } from '../'
 
 export interface IGetAllOrdersGateway {
   getAllOrders: (input: GetAllOrdersInput) => Promise<GetAllOrdersOutput>

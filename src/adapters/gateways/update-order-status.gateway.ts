@@ -1,4 +1,4 @@
-import { IOrderRepository, OrderOutput, IUpdateOrderStatusGateway } from '../../interfaces'
+import { IOrderRepository, OrderOutput, IUpdateOrderStatusGateway } from '@/interfaces'
 
 export class UpdateOrderStatusGateway implements IUpdateOrderStatusGateway {
   constructor(private readonly orderRepository: IOrderRepository) {}

@@ -1,4 +1,4 @@
-import { Order } from '../../domain/models/order'
+import { Order } from '@/domain/models/order'
 
 export interface IGetAllOrdersUseCase {
   execute: (input: IGetAllOrdersUseCase.Input) => Promise<IGetAllOrdersUseCase.Output>

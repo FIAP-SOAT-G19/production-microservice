@@ -1,5 +1,5 @@
-import { SchemaValidationError, ServerError } from '../../presentation/errors'
-import { ICreateOrderUseCase, ISchemaValidator, IUUIDGenerator, ICreateOrderGateway } from '../../interfaces'
+import { SchemaValidationError, ServerError } from '@/presentation/errors'
+import { ICreateOrderUseCase, ISchemaValidator, IUUIDGenerator, ICreateOrderGateway } from '@/interfaces'
 import { Order, OrderStatus } from '../models/order'
 
 export class CreateOrderUseCase implements ICreateOrderUseCase {

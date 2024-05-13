@@ -1,5 +1,4 @@
 export * from './controllers/controllers.interface'
-export * from './controllers/create-order.controller.interface'
 export * from './gateways/create-order-gateway.interface'
 export * from './gateways/delete-order-gateway.interface'
 export * from './gateways/get-all-orders-gateway.interface'

@@ -1,5 +1,5 @@
-import { IOrderRepository, ICreateOrderGateway, IQueueService } from '../../interfaces'
-import { Order } from '../../domain/models/order'
+import { IOrderRepository, ICreateOrderGateway, IQueueService } from '@/interfaces'
+import { Order } from '@/domain/models/order'
 
 export class CreateOrderGateway implements ICreateOrderGateway {
   constructor(

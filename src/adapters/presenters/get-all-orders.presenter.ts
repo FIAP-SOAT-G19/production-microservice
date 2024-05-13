@@ -1,5 +1,5 @@
-import { IGetAllOrdersPresenter, GetAllOrdersOutput } from '../../interfaces'
-import { OrderStatus, Order } from '../../domain/models/order'
+import { IGetAllOrdersPresenter, GetAllOrdersOutput } from '@/interfaces'
+import { OrderStatus, Order } from '@/domain/models/order'
 
 export class GetAllOrdersPresenter implements IGetAllOrdersPresenter {
 
