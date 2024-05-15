@@ -11,7 +11,12 @@ export class CreateOrderGateway implements ICreateOrderGateway {
     return await this.orderRepository.save(input)
   }
 
+  async getOrderByNumber (orderNumber: string): Promise<Order|null> {
+    return await this.orderRepository.getByOrderNumber(orderNumber)
+  }
+
   async sendMessage (queueName: string, input: string, messageId: string): Promise<void> {
     await this.queueService.sendMessage(queueName, input, messageId, messageId)
   }
+
 }

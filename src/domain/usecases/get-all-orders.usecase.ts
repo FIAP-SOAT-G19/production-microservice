@@ -10,41 +10,22 @@ export class GetAllOrdersUseCase implements IGetAllOrdersUseCase {
 
   async execute (input: IGetAllOrdersUseCase.Input): Promise<IGetAllOrdersUseCase.Output> {
     const queryOptions = this.makeQueryOptions(input)
+  
     const orders = await this.gateway.getAllOrders(queryOptions)
-    const ordenatedOrders = this.presenter.createOrdenation(orders)
+    const ordenatedOrders = this.presenter.createOrdenation(orders, input)
 
     return ordenatedOrders
   }
 
-  private makeQueryOptions (input: IGetAllOrdersUseCase.Input): IGetAllOrdersUseCase.Input {
-    const { status, paidAtInitialDate, paidAtEndDate, createdAtInitialDate, createdAtEndDate } = input
-    const options: IGetAllOrdersUseCase.Input = {}
-
+  private makeQueryOptions (input: IGetAllOrdersUseCase.Input): any {
+    const { status } = input
 
     if (status) {
-      if (!(status in OrderStatus)) {
+      if (!Object.values(OrderStatus).includes(status as OrderStatus)) {
         throw new InvalidParamError('status')
       }
-
-      options.status = status
+      return { status }
     }
-
-    if (paidAtInitialDate) {
-      options.paidAtInitialDate = paidAtInitialDate
-    }
-
-    if (paidAtEndDate) {
-      options.paidAtEndDate = paidAtEndDate
-    }
-
-    if (createdAtInitialDate) {
-      options.createdAtInitialDate = createdAtInitialDate
-    }
-
-    if (createdAtEndDate) {
-      options.createdAtEndDate = createdAtEndDate
-    }
-
-    return options
+    return {}
   }
 }

@@ -1,4 +1,12 @@
-import { SendMessageRequest, SQSClient, SendMessageCommand, ReceiveMessageCommand, ReceiveMessageRequest, DeleteMessageRequest, DeleteMessageCommand } from '@aws-sdk/client-sqs'
+import { 
+  SendMessageRequest, 
+  SQSClient, 
+  SendMessageCommand, 
+  ReceiveMessageCommand, 
+  ReceiveMessageRequest, 
+  DeleteMessageRequest, 
+  DeleteMessageCommand 
+} from '@aws-sdk/client-sqs'
 import { IQueueService } from '@/interfaces'
 import { logger } from '@/presentation/helpers/logger.helper'
 
@@ -54,7 +62,7 @@ export class AWSSQSService implements IQueueService {
     await this.client.send(command)
   }
 
-  private createClient (): SQSClient {
+  private createClient(): SQSClient {
     return new SQSClient({
       region: process.env.AWS_REGION,
       credentials: {

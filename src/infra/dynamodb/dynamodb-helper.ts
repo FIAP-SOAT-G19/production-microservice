@@ -1,7 +1,6 @@
 import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand, DeleteCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { Order } from '@/domain/models/order';
-import { SaveOrderOutput, GetOrderOutput, FindAllOrdersOutput, UpdateOrderOutput, DeleteOrderOutput } from './dynamodb-types';
 import { OrderOutput, GetAllOrdersInput, GetAllOrdersOutput } from '@/interfaces';
 
 export class DynamoDBClientHelper {
@@ -19,77 +18,70 @@ export class DynamoDBClientHelper {
         return docClient
     }
 
-    async save(orderDTO: Order): Promise<Order> {
-    
+    async save(orderDTO: Order): Promise<void> {
         const command = new PutCommand({
-            TableName: process.env.TABLE_NAME as string,
+            TableName: this.tableName,
             Item: orderDTO
         });
         
-        const { Attributes: response } = await this.docClient.send(command) as SaveOrderOutput<Order>
-        return response;
+        await this.docClient.send(command)
     }
 
-    async getByOrderNumber(orderNumber: string): Promise<OrderOutput> {
+    async getByOrderNumber(orderNumber: string): Promise<any> {
         const command = new GetCommand({
-            TableName: process.env.TABLE_NAME as string,
-            Key: { orderNumber }
+            TableName: this.tableName,
+            Key: {orderNumber},
         })
 
-        const { Item: response } = await this.docClient.send(command) as GetOrderOutput<Order>
-
-        return response || null
+        const response = await this.docClient.send(command)
+        return response.Item
     }
 
-    async getAll(params: GetAllOrdersInput): Promise<GetAllOrdersOutput> {
-        let queryString: string = ''
-        let queryValues: any = {}
+    async getAll(params: GetAllOrdersInput): Promise<any> {
+        let commandParams: any = {}
 
         if (params.status) {
-            queryString = 'status = :status'
-            queryValues = { ':status': params.status }
-        } else {
-            queryString = '(status = :received OR status = :InPreparation OR status = :prepared)'
-            queryValues = { ':received': 'received', ':InPreparation': 'InPreparation', ':prepared': 'prepared' }
+            commandParams = {
+                FilterExpression: '#order_status = :status',
+                ExpressionAttributeValues: { ':status': params.status },
+                ExpressionAttributeNames: {  '#order_status': 'status' }
+            }
         }
 
-        const command = new QueryCommand({
-            TableName: process.env.TABLE_NAME as string,
-            KeyConditionExpression: queryString,
-            ExpressionAttributeValues: queryValues,
-            ConsistentRead: true
+        const command = new ScanCommand({
+            TableName: this.tableName,
+            ConsistentRead: true,
+            ...commandParams
         })
 
-        const { Items: response } = await this.docClient.send(command) as FindAllOrdersOutput<GetAllOrdersOutput>
-        return response || null;
+        const response = await this.docClient.send(command)
+        return response.Items
     }
 
-    async updateStatus(id: string, status: string): Promise<OrderOutput> {
+    async updateStatus(orderNumber: string, status: string): Promise<void> {
 
         const command = new UpdateCommand({
-            TableName: process.env.TABLE_NAME as string,
-            Key: { id },
-            UpdateExpression: 'set status = :status',
+            TableName: this.tableName,
+            Key: { orderNumber },
+            UpdateExpression: 'set #order_status = :status',
             ExpressionAttributeValues: {
                 ':status': status
             },
+            ExpressionAttributeNames: {  '#order_status': 'status' },
             ReturnValues: 'ALL_NEW'
 
         })
 
-        const { Attributes: response } = await this.docClient.send(command) as UpdateOrderOutput<Order>
-        return response || null
-
+        await this.docClient.send(command)
     }
 
-    async delete(id: string): Promise<OrderOutput> {
+    async delete(orderNumber: string): Promise<void> {
         const command = new DeleteCommand({
-            TableName: process.env.TABLE_NAME as string,
-            Key: { id }
+            TableName: this.tableName,
+            Key: { orderNumber }
         })
 
-        const { Attributes: response } = await this.docClient.send(command) as DeleteOrderOutput<Order>
-        return response || null
+        await this.docClient.send(command)
     }
 
 }

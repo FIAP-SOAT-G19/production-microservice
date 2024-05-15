@@ -1,7 +1,7 @@
 import { logger } from '@/presentation/helpers/logger.helper'
-import { ICreateOrderUseCase, IQueueService } from '@/interfaces'
+import { ICreateOrderUseCase, IQueueService, IQueuePoller } from '@/interfaces'
 
-export class AWSSQSPoller {
+export class AWSSQSPoller implements IQueuePoller {
   constructor(
     private readonly createOrderUseCase: ICreateOrderUseCase,
     private readonly queueService: IQueueService
@@ -9,7 +9,7 @@ export class AWSSQSPoller {
 
   async processMessagesOnQueue(): Promise<void> {
     const queueName = process.env.RECEIVE_MESSAGE_QUEUE
-
+    
     if (queueName) {
       while (true) {
         try {
@@ -17,7 +17,8 @@ export class AWSSQSPoller {
     
           if (messages?.length) {
             for (const message of messages) {
-              await this.createOrder(message)
+              const messageBody = JSON.parse(message.Body)
+              await this.createOrder(messageBody)
               await this.deleteMessage(queueName, message.ReceiptHandle, message.MessageId)
             }
             await new Promise(resolve => setTimeout(resolve, 1000))
@@ -42,6 +43,5 @@ export class AWSSQSPoller {
   private async deleteMessage(queueName: string, receiptHandle: string, messageId: string): Promise<void> {
     await this.queueService.deleteMessage(queueName, receiptHandle, messageId)
   }
-
 }
 

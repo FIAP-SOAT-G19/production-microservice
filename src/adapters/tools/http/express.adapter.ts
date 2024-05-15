@@ -1,8 +1,5 @@
 import { IController, HttpRequest, HttpResponse } from '@/interfaces'
-// import { prismaClient } from '@/adapters/gateways/prisma.client'
 import { Request, Response } from 'express'
-// import { Cryptodapter } from '@/crypto/crypto.adapter'
-// import { obfuscateValue } from '@/shared/helpers/obfuscate-value.helper'
 
 export const expressRouteAdapter = (controller: IController) => {
   return async (req: Request, res: Response) => {
@@ -16,24 +13,7 @@ export const expressRouteAdapter = (controller: IController) => {
 
     const output = (statusCode >= 200 && statusCode < 500) ? body : { error: body.message }
 
-    // await logRequest(req, input, statusCode, output)
-
     res.status(statusCode).json(output)
   }
 }
 
-// const logRequest = async (req: Request, input: any, statusCode: number, output: any): Promise<void> => {
-//   const crypto = new Cryptodapter()
-//   await prismaClient.request.create({
-//     data: {
-//       id: crypto.generateUUID(),
-//       method: req.method,
-//       input: JSON.stringify(obfuscateValue({ ...input.body })),
-//       route: req.url,
-//       createdAt: new Date(),
-//       status: statusCode,
-//       output: JSON.stringify(output),
-//       updatedAt: new Date()
-//     }
-//   })
-// }

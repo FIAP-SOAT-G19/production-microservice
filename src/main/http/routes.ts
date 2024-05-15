@@ -9,14 +9,9 @@ import {
 
 const router = Router()
 
-// router.get('/healthcheck', expressRouteAdapter(makeHealthcheckController()))
-// router.get('/livenessProbe', expressRouteAdapter(makeLivenessProbeController()))
-// router.get('/readinessProbe', expressRouteAdapter(makeReadinessProbeController()))
-
-// Orders
-router.delete('/orders/:orderNumber', expressRouteAdapter(makeDeleteOrderController()))
-router.patch('/orders/:orderNumber', expressRouteAdapter(makeUpdateOrderStatusUseCaseController()))
-router.get('/orders/:orderNumber', expressRouteAdapter(makeGetOrderByNumberController()))
-router.get('/orders', expressRouteAdapter(makeGetAllOrdersController()))
+router.delete('/production/:orderNumber', expressRouteAdapter(makeDeleteOrderController()))
+router.patch('/production/:orderNumber', expressRouteAdapter(makeUpdateOrderStatusUseCaseController()))
+router.get('/production/:orderNumber', expressRouteAdapter(makeGetOrderByNumberController()))
+router.get('/production', expressRouteAdapter(makeGetAllOrdersController()))
 
 export { router }

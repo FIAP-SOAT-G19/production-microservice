@@ -7,15 +7,11 @@ export enum OrderStatus {
 }
 
 export interface Order {
-    id: string
     orderNumber: string
-    clientDocument: string | null
-    clientId: string | null
     status: string
     totalValue: number
-    paidAt: Date | null
-    createdAt: Date
-    updatedAt: Date | null
+    createdAt: string
+    updatedAt: string | null
     client: Client | null
     products: OrderProduct[]
 }

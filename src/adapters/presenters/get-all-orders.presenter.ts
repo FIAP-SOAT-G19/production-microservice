@@ -1,27 +1,37 @@
-import { IGetAllOrdersPresenter, GetAllOrdersOutput } from '@/interfaces'
+import { IGetAllOrdersPresenter, GetAllOrdersOutput, IGetAllOrdersUseCase } from '@/interfaces'
 import { OrderStatus, Order } from '@/domain/models/order'
 
 export class GetAllOrdersPresenter implements IGetAllOrdersPresenter {
 
-  createOrdenation(input: GetAllOrdersOutput): GetAllOrdersOutput {
-
-    if (input?.length) {
-      const preparedOrders = input.filter(order => { return order?.status === OrderStatus.PREPARED })
-      const inPreparationOrders = input.filter(order => { return order?.status === OrderStatus.IN_PREPARATION })
-      const receivedOrders = input.filter(order => { return order?.status === OrderStatus.RECEIVED })
-
+  createOrdenation(orders: GetAllOrdersOutput, filter: IGetAllOrdersUseCase.Input): GetAllOrdersOutput {
+    const { status, createdAtInitialDate, createdAtEndDate } = filter
+    
+    if (orders?.length) {
       const result: Order[] = []
+      let ordersToOrdenate = orders
 
-      const hasOtherStatusOrders = !preparedOrders.length && !inPreparationOrders.length && !receivedOrders.length
-      if (hasOtherStatusOrders) {
-        const ordenatedOrders = this.sortByDate(input)
-        result.push(...ordenatedOrders)
-      } else {
+      if (createdAtInitialDate && createdAtEndDate) {
+        const filteredOrders = orders.filter(order => { 
+          const orderCreatedAt = new Date(order.createdAt)
+          return (orderCreatedAt > new Date(createdAtInitialDate) && orderCreatedAt < new Date(createdAtEndDate))
+        })
+        ordersToOrdenate = filteredOrders
+      }
+
+      if (!status) {
+        const preparedOrders = ordersToOrdenate.filter(order => { return order?.status === OrderStatus.PREPARED })
+        const inPreparationOrders = ordersToOrdenate.filter(order => { return order?.status === OrderStatus.IN_PREPARATION })
+        const receivedOrders = ordersToOrdenate.filter(order => { return order?.status === OrderStatus.RECEIVED })
+
         const ordenatedPreparedOrders = preparedOrders.length ? this.sortByDate(preparedOrders) : []
         const ordenatedInPreparationOrders = inPreparationOrders.length ? this.sortByDate(inPreparationOrders) : []
         const ordenatedReceivedOrders = receivedOrders.length ? this.sortByDate(receivedOrders) : []
 
         result.push(...ordenatedPreparedOrders, ...ordenatedInPreparationOrders, ...ordenatedReceivedOrders)
+
+      } else {
+        const ordenatedOrders = this.sortByDate(ordersToOrdenate)
+        result.push(...ordenatedOrders)
       }
       return result
     }
@@ -29,10 +39,10 @@ export class GetAllOrdersPresenter implements IGetAllOrdersPresenter {
     return null
   }
 
-  private sortByDate(input: Order[]): Order[] {
-    return input.sort(function (currentItem, nextItem) {
-      const currentItemInMs = currentItem?.paidAt?.valueOf() || currentItem?.createdAt?.valueOf() || 0
-      const nextItemInMs = nextItem?.paidAt?.valueOf() || nextItem?.createdAt?.valueOf() || 0
+  private sortByDate(orders: Order[]): Order[] {
+    return orders.sort(function (currentItem, nextItem) {
+      const currentItemInMs = new Date(currentItem?.createdAt).valueOf() || 0
+      const nextItemInMs = new Date(nextItem?.createdAt).valueOf() || 0
 
       return currentItemInMs - nextItemInMs
     })

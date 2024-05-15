@@ -1,13 +1,17 @@
-import { ClientNotFoundError, InvalidParamError, MissingParamError, ProductNotFoundError, SchemaValidationError } from './'
+import { InvalidParamError, MissingParamError, SchemaValidationError, OrderNotFoundError } from './'
 import { badRequest, notFound, serverError,  } from '../helpers/http.helper'
 import { HttpResponse } from '@/interfaces'
 
 export const handleError = (error: any): HttpResponse => {
-  if (error instanceof InvalidParamError || error instanceof MissingParamError || error instanceof SchemaValidationError) {
+  if (
+    error instanceof InvalidParamError || 
+    error instanceof MissingParamError || 
+    error instanceof SchemaValidationError
+  ) {
     return badRequest(error)
   }
 
-  if (error instanceof ClientNotFoundError || error instanceof ProductNotFoundError) {
+  if (error instanceof OrderNotFoundError) {
     return notFound(error)
   }
   return serverError(error)

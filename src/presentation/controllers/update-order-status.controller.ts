@@ -6,7 +6,9 @@ export class UpdateOrderStatusController implements IController {
   constructor(private readonly updateOrderStatusUseCase: IUpdateOrderStatusUseCase) {}
 
   async execute(input: HttpRequest): Promise<HttpResponse> {
-    const { orderNumber, status } = input.params
+    const { orderNumber } = input.params
+    const { status } = input.body
+
     try {
       await this.updateOrderStatusUseCase.execute({
         orderNumber,

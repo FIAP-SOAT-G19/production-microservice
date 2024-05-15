@@ -1,5 +1,5 @@
-import { GetAllOrdersOutput } from '../'
+import { GetAllOrdersOutput, IGetAllOrdersUseCase } from '../'
 
 export interface IGetAllOrdersPresenter {
-  createOrdenation: (input: GetAllOrdersOutput) => GetAllOrdersOutput
+  createOrdenation: (input: GetAllOrdersOutput, filter: IGetAllOrdersUseCase.Input) => GetAllOrdersOutput
 }

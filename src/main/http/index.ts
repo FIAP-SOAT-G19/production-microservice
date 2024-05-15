@@ -1,9 +1,9 @@
-import '@/presentation/module-alias'
+import '../../presentation/module-alias'
 import express from 'express'
 import cors from 'cors'
-import swaggerUi from 'swagger-ui-express'
+// import swaggerUi from 'swagger-ui-express'
 import { router } from './routes'
-import { messagePollerFactory } from '../factories'
+import { messagePollerFactory } from '../factories/message-service/message-poller.factory'
 // import swaggerDocument from '@/infra/docs/swagger.json'
 
 const start = async(): Promise<void> => {
@@ -16,7 +16,7 @@ const start = async(): Promise<void> => {
     const port = process.env.PORT ?? 3000
     app.listen(port, () => { console.log(`Server running at port ${port}`) })
 
-    await messagePollerFactory()
+    await messagePollerFactory().processMessagesOnQueue()
 }
 
 void start()

@@ -1,5 +1,5 @@
 import { IUpdateOrderStatusUseCase, IUpdateOrderStatusGateway } from '@/interfaces'
-import { MissingParamError, InvalidParamError } from '@/presentation/errors'
+import { MissingParamError, InvalidParamError, ServerError } from '@/presentation/errors'
 import { OrderStatus } from '../models/order'
 
 export class UpdateOrderStatusUseCase implements IUpdateOrderStatusUseCase {
@@ -8,10 +8,14 @@ export class UpdateOrderStatusUseCase implements IUpdateOrderStatusUseCase {
     const { orderNumber, status } = input
     await this.validate(input)
 
-    await this.gateway.updateStatus(
+    const updatedOrder = await this.gateway.updateStatus(orderNumber, status)
+
+    if (!updatedOrder) throw new ServerError()
+
+    await this.sendMessage({
       orderNumber,
-      status
-    )
+      status: updatedOrder.status
+    })
   }
 
   private async validate (input: IUpdateOrderStatusUseCase.Input): Promise<void> {
@@ -30,8 +34,17 @@ export class UpdateOrderStatusUseCase implements IUpdateOrderStatusUseCase {
       throw new InvalidParamError('orderNumber')
     }
 
-    if (!(status in OrderStatus)) {
+    if (!Object.values(OrderStatus).includes(status as OrderStatus)) {
       throw new InvalidParamError('status')
     }
+  }
+
+  private async sendMessage(input: IUpdateOrderStatusUseCase.Input): Promise<void> {
+    const { orderNumber, status } = input
+
+    const queueName = process.env.SEND_MESSAGE_QUEUE as string
+    const messageBody = JSON.stringify({ orderNumber, status })
+
+    await this.gateway.sendMessage(queueName, messageBody, orderNumber)
   }
 }
