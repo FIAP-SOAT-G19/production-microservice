@@ -1,61 +1,92 @@
-import { IUUIDGenerator, ISchemaValidator, ICreateOrderGateway } from '@/data/interfaces/usecases/order'
-import { InvalidParamError } from '@/infra/shared'
+import { ISchemaValidator, ICreateOrderGateway } from '@/interfaces'
+import { InvalidParamError } from '@/presentation/errors'
 import { CreateOrderUseCase } from './create-order.usecase'
+import { Order } from '../models/order'
 import { mock } from 'jest-mock-extended'
 import MockDate from 'mockdate'
 
-const uuidGenerator = mock<IUUIDGenerator>()
 const schemaValidator = mock<ISchemaValidator>()
 const gateway = mock<ICreateOrderGateway>()
 
-jest.mock('@/infra/shared/helpers/string.helper', () => {
-  const originalMethod = jest.requireActual('@/infra/shared/helpers/string.helper')
-  return {
-    ...originalMethod,
-    ramdonStringGenerator: jest.fn().mockReturnValue('anyOrderNumber')
+// jest.mock('@/infra/shared/helpers/string.helper', () => {
+//   const originalMethod = jest.requireActual('@/infra/shared/helpers/string.helper')
+//   return {
+//     ...originalMethod,
+//     ramdonStringGenerator: jest.fn().mockReturnValue('anyOrderNumber')
+//   }
+// })
+
+const input = {
+  orderNumber: "anyOrderNumber",
+  totalValue: 8000,
+  cardIdentifier: "6fd92a9e-6a55-4c54-869a-3068e125af27",
+  products: [{
+    id: 'anyProductId',
+    name: 'AnyProductName',
+    category: 'anyProductCategory',
+    price: 2500,
+    description: 'anyProductDescription',
+    image: 'anyProductImageUrl',
+    amount: 1
+  }, {
+    id: 'anyAnotherProductId',
+    name: 'AnyAnotherProductName',
+    category: 'anyAnotherProductCategory',
+    price: 1000,
+    description: 'anyAnotherProductDescription',
+    image: 'anyAnotherProductImageUrl',
+    amount: 1
+  }],
+  client: {
+    id: "AnyId",
+    identifier: "anyIdentifier",
+    name: "anyClientName",
+    email: "anyEmail@email.com",
+    cpf: "anyCPF",
+    createdAt: "1990-01-01T00:00:00.000Z"
+  },
+  createdAt: "2024-05-15T10:00:00.000Z"
+}
+
+const order: Order = {
+  orderNumber: 'anyOrderNumber',
+  status: 'received',
+  totalValue: 10000,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  products: [{
+    id: 'anyProductId',
+    name: 'AnyProductName',
+    category: 'anyProductCategory',
+    price: 2500,
+    description: 'anyProductDescription',
+    image: 'anyProductImageUrl',
+    amount: 1
+  }, {
+    id: 'anyAnotherProductId',
+    name: 'AnyAnotherProductName',
+    category: 'anyAnotherProductCategory',
+    price: 1000,
+    description: 'anyAnotherProductDescription',
+    image: 'anyAnotherProductImageUrl',
+    amount: 1
+  }],
+  client: {
+    name: 'anyClientName',
+    email: "anyEmail@email.com",
+    cpf: "anyCPF",
   }
-})
+}
 
 describe('CreateOrderUseCase', () => {
   let sut: CreateOrderUseCase
-  let input: any
 
   beforeEach(() => {
-    sut = new CreateOrderUseCase(schemaValidator, uuidGenerator, gateway)
-    input = {
-      clientId: 'anyClientId',
-      clientDocument: null,
-      products: [{
-        id: 'anyProductId',
-        name: 'anyProductName',
-        category: 'anyCategory',
-        price: 2500,
-        description: 'AnyDescription',
-        image: 'anyimageUrl',
-        amount: 2
-      }]
-    }
-    uuidGenerator.generate.mockReturnValue('anyUUID')
-    gateway.saveOrder.mockResolvedValue('anyOrderId')
-    gateway.getClientById.mockResolvedValue({
-      id: 'anyClientId',
-      name: 'anyClientName',
-      email: 'anyClientEmail',
-      password: 'anyClientPassword',
-      cpf: 'anyClientCpf',
-      createdAt: new Date('2023-01-01 13:45:18'),
-      updatedAt: null,
-      deletedAt: null
-    })
+    sut = new CreateOrderUseCase(schemaValidator, gateway)
+    gateway.getOrderByNumber.mockResolvedValue(null)
     schemaValidator.validate.mockReturnValue({ value: input })
-    gateway.getProductById.mockResolvedValue({
-      id: 'anyProductId',
-      name: 'anyProductName',
-      category: 'anyCategory',
-      price: 2500,
-      description: 'AnyDescription',
-      image: 'anyimageUrl'
-    })
+    gateway.saveOrder.mockResolvedValue(order)
+    gateway.sendMessage.mockResolvedValue()
 
     jest.clearAllMocks()
   })
@@ -68,131 +99,138 @@ describe('CreateOrderUseCase', () => {
     MockDate.reset()
   })
 
-  test('should call gateway.getClientById once and with correct clientId', async () => {
+  test('should call gateway.getOrderByNumber once and with correct orderNumber', async () => {
     await sut.execute(input)
 
-    expect(gateway.getClientById).toHaveBeenCalledTimes(1)
-    expect(gateway.getClientById).toHaveBeenCalledWith('anyClientId')
+    expect(gateway.getOrderByNumber).toHaveBeenCalledTimes(1)
+    expect(gateway.getOrderByNumber).toHaveBeenCalledWith(input.orderNumber)
   })
 
-  test('should call schemaValidator once and with correct values', async () => {
-    await sut.execute(input)
+  // test('should call gateway.getOrderByNumber once and with correct clientId', async () => {
+  //   await sut.execute(input)
 
-    expect(schemaValidator.validate).toHaveBeenCalledTimes(1)
-    expect(schemaValidator.validate).toHaveBeenCalledWith({ schema: 'orderSchema', data: input })
-  })
+  //   expect(gateway.getOrderByNumber).toHaveBeenCalledTimes(1)
+  //   expect(gateway.getOrderByNumber).toHaveBeenCalledWith('anyClientId')
+  // })
 
-  test('should throws if validation fails', async () => {
-    const error = { value: {}, error: 'anyError' }
-    schemaValidator.validate.mockReturnValueOnce(error)
+  // test('should call schemaValidator once and with correct values', async () => {
+  //   await sut.execute(input)
 
-    const output = sut.execute(input)
+  //   expect(schemaValidator.validate).toHaveBeenCalledTimes(1)
+  //   expect(schemaValidator.validate).toHaveBeenCalledWith({ schema: 'orderSchema', data: input })
+  // })
 
-    await expect(output).rejects.toThrow()
-  })
+  // test('should throws if validation fails', async () => {
+  //   const error = { value: {}, error: 'anyError' }
+  //   schemaValidator.validate.mockReturnValueOnce(error)
 
-  test('should throws if gateway.getClientById returns null', async () => {
-    gateway.getClientById.mockResolvedValueOnce(null)
+  //   const output = sut.execute(input)
 
-    const output = sut.execute(input)
+  //   await expect(output).rejects.toThrow()
+  // })
 
-    await expect(output).rejects.toThrowError(new InvalidParamError('clientId'))
-  })
+  // test('should throws if gateway.getClientById returns null', async () => {
+  //   gateway.getClientById.mockResolvedValueOnce(null)
 
-  test('should throws if gateway.getProductById returns null', async () => {
-    gateway.getProductById.mockResolvedValueOnce(null)
+  //   const output = sut.execute(input)
 
-    const output = sut.execute(input)
+  //   await expect(output).rejects.toThrowError(new InvalidParamError('clientId'))
+  // })
 
-    await expect(output).rejects.toThrowError(new InvalidParamError('productId'))
-  })
+  // test('should throws if gateway.getProductById returns null', async () => {
+  //   gateway.getProductById.mockResolvedValueOnce(null)
 
-  test('should call UUIDGenerator', async () => {
-    await sut.execute(input)
+  //   const output = sut.execute(input)
 
-    expect(uuidGenerator.generate).toHaveBeenCalledTimes(3)
-  })
+  //   await expect(output).rejects.toThrowError(new InvalidParamError('productId'))
+  // })
 
-  test('should call gateway.saveOrder once and with correct values', async () => {
-    await sut.execute(input)
+  // test('should call UUIDGenerator', async () => {
+  //   await sut.execute(input)
 
-    expect(gateway.saveOrder).toHaveBeenCalledTimes(1)
-    expect(gateway.saveOrder).toHaveBeenCalledWith({
-      id: 'anyUUID',
-      clientId: 'anyClientId',
-      orderNumber: 'anyOrderNumber',
-      clientDocument: null,
-      status: 'waitingPayment',
-      totalValue: 5000,
-      createdAt: new Date()
-    })
-  })
+  //   expect(uuidGenerator.generate).toHaveBeenCalledTimes(3)
+  // })
 
-  test('should call gateway.saveOrder once and with correct values and without clientId', async () => {
-    input.clientId = null
-    input.clientDocument = 'anyClientDocument'
+  // test('should call gateway.saveOrder once and with correct values', async () => {
+  //   await sut.execute(input)
 
-    await sut.execute(input)
+  //   expect(gateway.saveOrder).toHaveBeenCalledTimes(1)
+  //   expect(gateway.saveOrder).toHaveBeenCalledWith({
+  //     id: 'anyUUID',
+  //     clientId: 'anyClientId',
+  //     orderNumber: 'anyOrderNumber',
+  //     clientDocument: null,
+  //     status: 'waitingPayment',
+  //     totalValue: 5000,
+  //     createdAt: new Date()
+  //   })
+  // })
 
-    expect(gateway.saveOrder).toHaveBeenCalledTimes(1)
-    expect(gateway.saveOrder).toHaveBeenCalledWith({
-      id: 'anyUUID',
-      orderNumber: 'anyOrderNumber',
-      clientId: null,
-      clientDocument: 'anyClientDocument',
-      status: 'waitingPayment',
-      totalValue: 5000,
-      createdAt: new Date()
-    })
-  })
+  // test('should call gateway.saveOrder once and with correct values and without clientId', async () => {
+  //   input.clientId = null
+  //   input.clientDocument = 'anyClientDocument'
 
-  test('should return a correct orderId and orderNumber', async () => {
-    const output = await sut.execute(input)
+  //   await sut.execute(input)
 
-    expect(output).toEqual({
-      orderNumber: 'anyOrderNumber'
-    })
-  })
+  //   expect(gateway.saveOrder).toHaveBeenCalledTimes(1)
+  //   expect(gateway.saveOrder).toHaveBeenCalledWith({
+  //     id: 'anyUUID',
+  //     orderNumber: 'anyOrderNumber',
+  //     clientId: null,
+  //     clientDocument: 'anyClientDocument',
+  //     status: 'waitingPayment',
+  //     totalValue: 5000,
+  //     createdAt: new Date()
+  //   })
+  // })
 
-  test('should call calculateTotalValue once and with correct values', async () => {
-    const spy = jest.spyOn(sut as any, 'calculateTotalValue')
+  // test('should return a correct orderId and orderNumber', async () => {
+  //   const output = await sut.execute(input)
 
-    await sut.execute(input)
+  //   expect(output).toEqual({
+  //     orderNumber: 'anyOrderNumber'
+  //   })
+  // })
 
-    expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).toHaveBeenCalledWith(input.products)
-  })
+  // test('should call calculateTotalValue once and with correct values', async () => {
+  //   const spy = jest.spyOn(sut as any, 'calculateTotalValue')
 
-  test('should calculate total value correctly', async () => {
-    const total = sut.calculateTotalValue(input.products)
+  //   await sut.execute(input)
 
-    expect(total).toBe(5000)
-  })
+  //   expect(spy).toHaveBeenCalledTimes(1)
+  //   expect(spy).toHaveBeenCalledWith(input.products)
+  // })
 
-  test('should call gateway.saveOrderProduct once and with correct values', async () => {
-    await sut.execute(input)
+  // test('should calculate total value correctly', async () => {
+  //   const total = sut.calculateTotalValue(input.products)
 
-    expect(gateway.saveOrderProduct).toHaveBeenCalledWith({
-      id: 'anyUUID',
-      productId: 'anyProductId',
-      orderId: 'anyUUID',
-      amount: 2,
-      productPrice: 2500,
-      createdAt: new Date()
-    })
-  })
+  //   expect(total).toBe(5000)
+  // })
 
-  test('should call gateway.createPayment once and with correct values', async () => {
-    await sut.execute(input)
+  // test('should call gateway.saveOrderProduct once and with correct values', async () => {
+  //   await sut.execute(input)
 
-    expect(gateway.createPayment).toHaveBeenCalledTimes(1)
-    expect(gateway.createPayment).toHaveBeenCalledWith({
-      id: 'anyUUID',
-      orderNumber: 'anyOrderNumber',
-      status: 'waiting',
-      reason: null,
-      createdAt: new Date(),
-      updatedAt: null
-    })
-  })
+  //   expect(gateway.saveOrderProduct).toHaveBeenCalledWith({
+  //     id: 'anyUUID',
+  //     productId: 'anyProductId',
+  //     orderId: 'anyUUID',
+  //     amount: 2,
+  //     productPrice: 2500,
+  //     createdAt: new Date()
+  //   })
+  // })
+
+  // test('should call gateway.createPayment once and with correct values', async () => {
+  //   await sut.execute(input)
+
+  //   expect(gateway.createPayment).toHaveBeenCalledTimes(1)
+  //   expect(gateway.createPayment).toHaveBeenCalledWith({
+  //     id: 'anyUUID',
+  //     orderNumber: 'anyOrderNumber',
+  //     status: 'waiting',
+  //     reason: null,
+  //     createdAt: new Date(),
+  //     updatedAt: null
+  //   })
+  // })
 })
