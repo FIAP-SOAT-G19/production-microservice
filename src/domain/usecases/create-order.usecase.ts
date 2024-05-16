@@ -8,7 +8,7 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     private readonly gateway: ICreateOrderGateway
   ) {}
 
-  async execute (input: Order): Promise<void> {
+  async execute (input: any): Promise<void> {
     
     const orderToSave = this.buildOrder(input)
     await this.validate(orderToSave)
@@ -22,6 +22,7 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
   }
 
   private buildOrder(input: any): Order {
+
     const { orderNumber, totalValue, client, products } = input
     const orderToSave = {
       orderNumber,
