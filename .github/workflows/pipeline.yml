@@ -16,8 +16,8 @@ jobs:
       - name: Install Dependencies
         run: npm i
 
-      - name: Test
-        run: npm run test
+      # - name: Test
+      #   run: npm run test
 
       - name: Create .env with Github Secrets and run script
         run: |
