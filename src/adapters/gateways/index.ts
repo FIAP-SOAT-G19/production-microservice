@@ -1,0 +1,5 @@
+export * from './create-order.gateway'
+export * from './delete-order-gateway'
+export * from './get-all-orders.gateway'
+export * from './get-order-by-number.gateway'
+export * from './update-order-status.gateway'

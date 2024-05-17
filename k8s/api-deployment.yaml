@@ -21,50 +21,23 @@ spec:
           ports:
             - containerPort: 3000
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /api/v1/livenessProbe
-              port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 2
-            timeoutSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /api/v1/readinessProbe
-              port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 2
-            timeoutSeconds: 10
           env:
-            - name: DATABASE_URL
+            - name: RECEIVE_MESSAGE_QUEUE
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: database-url
-            - name: POSTGRES_HOST
+                  key: receive-message-queue
+            - name: SEND_MESSAGE_QUEUE
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: postgres-host
-            - name: POSTGRES_DB
+                  key: send-message-queue
+            - name: TABLE_NAME
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: postgres-db
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: postgres-user
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: postgres-password
+                  key: table-name
+            
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -91,11 +64,9 @@ metadata:
   name: api-secrets
 type: Opaque
 stringData:
-  postgres-db: tech_challenge
-  postgres-user: postgres
-  postgres-password: postgres
-  postgres-host: dbpostgres.czg2ea2yu0rz.us-east-1.rds.amazonaws.com
-  database-url: postgresql://postgres:postgres@dbpostgres.czg2ea2yu0rz.us-east-1.rds.amazonaws.com:5432/dbpostgres?schema=public
+  receive-message-queue: https://sqs.us-east-1.amazonaws.com/471112746092/approved_payment.fifo
+  send-message-queue: https://sqs.us-east-1.amazonaws.com/471112746092/update_order.fifo
+  table-name: production
 ---
 apiVersion: v1
 kind: Service
