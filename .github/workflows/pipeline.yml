@@ -6,6 +6,23 @@ on:
       - main
 
 jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: npm i
+      - name: Test and coverage
+        run: npm run test:coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
   build-and-push:
     runs-on: ubuntu-latest      
 
@@ -16,8 +33,8 @@ jobs:
       - name: Install Dependencies
         run: npm i
 
-      # - name: Test
-      #   run: npm run test
+      - name: Test
+        run: npm run test
 
       - name: Create .env with Github Secrets and run script
         run: |

@@ -8,17 +8,17 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     private readonly gateway: ICreateOrderGateway
   ) {}
 
-  async execute (input: any): Promise<void> {
+  async execute(input: any): Promise<void> {
     
     const orderToSave = this.buildOrder(input)
     await this.validate(orderToSave)
     await this.getOrderByNumber(orderToSave.orderNumber)
 
     const createdOrder = await this.saveOrder(orderToSave)
-
     if (!createdOrder) throw new ServerError()
       
-    await this.sendMessage(createdOrder)
+    const messageSent = await this.sendMessage(createdOrder)
+    if (!messageSent) throw new ServerError()
   }
 
   private buildOrder(input: any): Order {
@@ -61,13 +61,13 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     return createdOrder
   }
 
-  private async sendMessage(input: Order): Promise<void> {
+  private async sendMessage(input: Order): Promise<boolean> {
     const { orderNumber, status } = input
 
     const queueName = process.env.SEND_MESSAGE_QUEUE as string
     const messageBody = JSON.stringify({ orderNumber, status })
 
-    await this.gateway.sendMessage(queueName, messageBody, orderNumber)
+    return await this.gateway.sendMessage(queueName, messageBody, orderNumber)
   }
 }
 

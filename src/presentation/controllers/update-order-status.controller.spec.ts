@@ -1,5 +1,6 @@
-import { IUpdateOrderStatusUseCase } from '@/data/interfaces'
-import { HttpRequest, serverError, InvalidParamError, badRequest, success } from '@/infra/shared'
+import { IUpdateOrderStatusUseCase, HttpRequest } from '@/interfaces'
+import { InvalidParamError } from '@/presentation/errors'
+import { badRequest, success, serverError } from '@/presentation/helpers/http.helper'
 import { UpdateOrderStatusController } from './update-order-status.controller'
 import { mock } from 'jest-mock-extended'
 
