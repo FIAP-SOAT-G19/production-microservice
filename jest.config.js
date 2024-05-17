@@ -14,7 +14,6 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageProvider: 'babel',
-  coverageReporters: ["text","html"],
   moduleNameMapper: {
     '@/(.+)': '<rootDir>/src/$1'
   },
