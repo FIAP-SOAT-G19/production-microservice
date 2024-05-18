@@ -1,19 +1,17 @@
-import { IGetOrderByNumberUseCase } from '@/data/interfaces'
-import { OrderOutput } from '@/application/usecases/order/orders.types'
-import { HttpRequest, success, serverError, InvalidParamError, badRequest } from '@/infra/shared'
+import { IGetOrderByNumberUseCase, HttpRequest } from '@/interfaces'
+import { Order } from '@/domain/models/order'
+import { InvalidParamError, NotFoundError } from '@/presentation/errors'
+import { badRequest, success, serverError, notFound } from '@/presentation/helpers/http.helper'
 import { GetOrderByNumberController } from './get-order-by-number.controller'
 import { mock } from 'jest-mock-extended'
 
 const getOrderByNumberUseCase = mock<IGetOrderByNumberUseCase>()
-const orderOutput: OrderOutput = {
-  id: 'anyOrderId',
+const orderOutput: Order = {
   orderNumber: 'anyOrderNumber',
-  clientId: 'anyClientId',
-  clientDocument: null,
   status: 'finalized',
   totalValue: 4500,
-  createdAt: new Date('2023-10-12 16:55:27'),
-  paidAt: new Date('2023-10-12 17:13:26'),
+  createdAt: '2023-10-12 16:55:27',
+  updatedAt: null,
   client: {
     name: 'anyClientName',
     email: 'anyClientEmail',
@@ -65,6 +63,16 @@ describe('GetOrderByNumberController', () => {
     const output = await sut.execute(input)
 
     expect(output).toEqual(serverError(error))
+  })
+
+  test('should return a correct error if GetOrderByNumberUseCase throws an exception', async () => {
+    const error = new NotFoundError('order')
+
+    getOrderByNumberUseCase.execute.mockImplementationOnce(() => { throw error })
+
+    const output = await sut.execute(input)
+
+    expect(output).toEqual(notFound(error))
   })
 
   test('should return a correct error if GetOrderByNumberUseCase throws an exception', async () => {

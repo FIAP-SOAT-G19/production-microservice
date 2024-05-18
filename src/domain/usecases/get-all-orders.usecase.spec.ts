@@ -1,201 +1,110 @@
-import { IGetAllOrdersUseCase, IGetAllOrdersGateway, IGetAllOrdersPresenter } from '@/data/interfaces'
-import { InvalidParamError } from '@/infra/shared'
+import { IGetAllOrdersUseCase, IGetAllOrdersGateway, IGetAllOrdersPresenter } from '@/interfaces'
+import { InvalidParamError } from '@/presentation/errors'
 import { GetAllOrdersUseCase } from './get-all-orders.usecase'
-import { OrderOutput } from './orders.types'
 import { mock } from 'jest-mock-extended'
 
 const gateway = mock<IGetAllOrdersGateway>()
 const presenter = mock<IGetAllOrdersPresenter>()
 
-const orders: OrderOutput [] = [{
-  id: 'anyOrderId',
-  orderNumber: 'anyOrderNumber',
-  clientId: 'anyClientId',
-  clientDocument: null,
-  status: 'finalized',
-  totalValue: 4500,
-  createdAt: new Date('2023-10-12 16:55:27'),
-  paidAt: new Date('2023-10-12 17:13:26'),
-  client: {
-    name: 'anyClientName',
-    email: 'anyClientEmail',
-    cpf: 'anyClientCpf'
-  },
-  products: [{
-    id: 'anyProductId',
-    name: 'anyProductName',
-    category: 'anyCategoryProduct',
-    price: 1700,
-    description: 'anyDescriptionProduct',
-    image: 'anyImageProduct',
-    amount: 3
-  }]
-},
-{
-  id: 'anotherOrderId',
-  orderNumber: 'anotherOrderNumber',
-  clientId: 'anotherClientId',
-  clientDocument: null,
-  status: 'finalized',
-  totalValue: 4500,
-  createdAt: new Date('2023-10-12 16:55:27'),
-  paidAt: new Date('2023-10-12 17:13:26'),
-  client: {
-    name: 'anotherClientName',
-    email: 'anotherClientEmail',
-    cpf: 'anotherClientCpf'
-  },
-  products: [{
-    id: 'anotherProductId',
-    name: 'anotherProductName',
-    category: 'anotherCategoryProduct',
-    price: 1700,
-    description: 'anotherDescriptionProduct',
-    image: 'anotherImageProduct',
-    amount: 3
-  }]
-}]
-
 describe('GetAllOrdersUseCase', () => {
-  let sut: GetAllOrdersUseCase
+  let sut: IGetAllOrdersUseCase
   let input: IGetAllOrdersUseCase.Input
+  let orders: IGetAllOrdersUseCase.Output
 
   beforeEach(() => {
     sut = new GetAllOrdersUseCase(gateway, presenter)
     input = {}
+    orders = [{
+      orderNumber: 'anyOrderNumber',
+      status: 'received',
+      totalValue: 8000,
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+      products: [{
+        id: 'anyProductId',
+        name: 'AnyProductName',
+        category: 'anyProductCategory',
+        price: 2500,
+        description: 'anyProductDescription',
+        image: 'anyProductImageUrl',
+        amount: 1
+      }, {
+        id: 'anyAnotherProductId',
+        name: 'AnyAnotherProductName',
+        category: 'anyAnotherProductCategory',
+        price: 1000,
+        description: 'anyAnotherProductDescription',
+        image: 'anyAnotherProductImageUrl',
+        amount: 1
+      }],
+      client: {
+        name: 'anyClientName',
+        email: "anyEmail@email.com",
+        cpf: "anyCPF",
+      }
+    }, {
+      orderNumber:  'anotherOrderNumber',
+      status: 'finalized',
+      totalValue: 4500,
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+      products: [{
+        id: 'anotherProductId',
+        name: 'anotherProductName',
+        category: 'anotherCategoryProduct',
+        price: 1700,
+        description: 'anotherDescriptionProduct',
+        image: 'anotherImageProduct',
+        amount: 3
+      }],
+      client: {
+        name: 'anotherClientName',
+        email: 'anotherClientEmail',
+        cpf: 'anotherClientCpf'
+      }
+    }]
     gateway.getAllOrders.mockResolvedValue(orders)
     presenter.createOrdenation.mockReturnValue(orders)
   })
 
-  test('should call gateway.getAllOrders once and with correct values', async () => {
-    input.clientId = 'anyClientId'
-
+  test('should call gateway.getAllOrders once and with correct values if there arent any filters', async () => {
     await sut.execute(input)
 
     expect(gateway.getAllOrders).toHaveBeenCalledTimes(1)
-    expect(gateway.getAllOrders).toHaveBeenCalledWith({ clientId: 'anyClientId' })
+    expect(gateway.getAllOrders).toHaveBeenCalledWith({})
   })
 
   test('should call gateway.getAllOrders once and with correct values if status is passed in query', async () => {
-    input.clientId = 'anyClientId'
-    input.status = 'waitingPayment'
+    input = { status: 'received' }
 
     await sut.execute(input)
 
     expect(gateway.getAllOrders).toHaveBeenCalledTimes(1)
-    expect(gateway.getAllOrders).toHaveBeenCalledWith({ clientId: 'anyClientId', status: 'waitingPayment' })
+    expect(gateway.getAllOrders).toHaveBeenCalledWith({ status: 'received' })
+  })
+
+  test('should throw if invalid status is provided', async () => {
+    input = { status: 'invalidStatus' }
+
+    const output = sut.execute(input)
+
+    await expect(output).rejects.toThrow(new InvalidParamError('status'))
   })
 
   test('should call presenter.createOrdenation once with all orders returned', async () => {
-    input.clientId = 'anyClientId'
+    await sut.execute(input)
+
+    expect(presenter.createOrdenation).toHaveBeenCalledTimes(1)
+    expect(presenter.createOrdenation).toHaveBeenCalledWith(orders, input)
+  })
+
+  test('should call presenter.createOrdenation once with all orders returned and filters', async () => {
+    input = { status: 'received', createdAtInitialDate: '2024-05-16', createdAtEndDate: '2024-05-18' }
 
     await sut.execute(input)
 
     expect(presenter.createOrdenation).toHaveBeenCalledTimes(1)
-    expect(presenter.createOrdenation).toHaveBeenCalledWith(orders)
-  })
-
-  test('should throws if invalid status is provided', async () => {
-    input.status = 'invalidStatus'
-
-    const output = sut.execute(input)
-
-    await expect(output).rejects.toThrowError(new InvalidParamError('status'))
-  })
-
-  test('should call gateway.getAllOrders once and with correct values', async () => {
-    input.clientId = 'anyClientId'
-    input.status = 'waitingPayment'
-    input.paidAtInitialDate = '2023-01-01 00:00:00'
-
-    await sut.execute(input)
-
-    expect(gateway.getAllOrders).toHaveBeenCalledTimes(1)
-    expect(gateway.getAllOrders).toHaveBeenCalledWith({
-      clientId: 'anyClientId',
-      status: 'waitingPayment',
-      paidAtInitialDate: '2023-01-01 00:00:00'
-    })
-  })
-
-  test('should call gateway.getAllOrders once and with correct values', async () => {
-    input.clientId = 'anyClientId'
-    input.status = 'waitingPayment'
-    input.paidAtInitialDate = '2023-01-01 00:00:00'
-    input.paidAtEndDate = '2023-05-01 00:00:00'
-
-    await sut.execute(input)
-
-    expect(gateway.getAllOrders).toHaveBeenCalledTimes(1)
-    expect(gateway.getAllOrders).toHaveBeenCalledWith({
-      clientId: 'anyClientId',
-      status: 'waitingPayment',
-      paidAtInitialDate: '2023-01-01 00:00:00',
-      paidAtEndDate: '2023-05-01 00:00:00'
-    })
-  })
-
-  test('should call gateway.getAllOrders once and with correct values', async () => {
-    input.clientId = 'anyClientId'
-    input.status = 'waitingPayment'
-    input.paidAtInitialDate = '2023-01-01 00:00:00'
-    input.paidAtEndDate = '2023-05-01 00:00:00'
-    input.createdAtInitialDate = '2023-05-01 00:00:00'
-
-    await sut.execute(input)
-
-    expect(gateway.getAllOrders).toHaveBeenCalledTimes(1)
-    expect(gateway.getAllOrders).toHaveBeenCalledWith({
-      clientId: 'anyClientId',
-      status: 'waitingPayment',
-      paidAtInitialDate: '2023-01-01 00:00:00',
-      paidAtEndDate: '2023-05-01 00:00:00',
-      createdAtInitialDate: '2023-05-01 00:00:00'
-    })
-  })
-
-  test('should call gateway.getAllOrders once and with correct values', async () => {
-    input.clientId = 'anyClientId'
-    input.status = 'waitingPayment'
-    input.paidAtInitialDate = '2023-01-01 00:00:00'
-    input.paidAtEndDate = '2023-05-01 00:00:00'
-    input.createdAtInitialDate = '2023-05-01 00:00:00'
-    input.createdAtEndDate = '2023-08-01 00:00:00'
-
-    await sut.execute(input)
-
-    expect(gateway.getAllOrders).toHaveBeenCalledTimes(1)
-    expect(gateway.getAllOrders).toHaveBeenCalledWith({
-      clientId: 'anyClientId',
-      status: 'waitingPayment',
-      paidAtInitialDate: '2023-01-01 00:00:00',
-      paidAtEndDate: '2023-05-01 00:00:00',
-      createdAtInitialDate: '2023-05-01 00:00:00',
-      createdAtEndDate: '2023-08-01 00:00:00'
-    })
-  })
-
-  test('should call gateway.getAllOrders once and with correct values', async () => {
-    input.clientId = 'anyClientId'
-    input.clientDocument = 'anyClientDocuyment'
-    input.status = 'waitingPayment'
-    input.paidAtInitialDate = '2023-01-01 00:00:00'
-    input.paidAtEndDate = '2023-05-01 00:00:00'
-    input.createdAtInitialDate = '2023-05-01 00:00:00'
-    input.createdAtEndDate = '2023-08-01 00:00:00'
-
-    await sut.execute(input)
-
-    expect(gateway.getAllOrders).toHaveBeenCalledTimes(1)
-    expect(gateway.getAllOrders).toHaveBeenCalledWith({
-      clientId: 'anyClientId',
-      clientDocument: 'anyClientDocuyment',
-      status: 'waitingPayment',
-      paidAtInitialDate: '2023-01-01 00:00:00',
-      paidAtEndDate: '2023-05-01 00:00:00',
-      createdAtInitialDate: '2023-05-01 00:00:00',
-      createdAtEndDate: '2023-08-01 00:00:00'
-    })
+    expect(presenter.createOrdenation).toHaveBeenCalledWith(orders, input)
   })
 
   test('should return null if gateway.getAllOrders and presenter.createOrdenation returns null', async () => {

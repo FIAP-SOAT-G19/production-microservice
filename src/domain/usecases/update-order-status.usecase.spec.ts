@@ -1,47 +1,55 @@
 import { UpdateOrderStatusUseCase } from './update-order-status.usecase'
-import { MissingParamError, InvalidParamError } from '@/infra/shared'
-import { OrderOutput } from './orders.types'
-import { IUpdateOrderStatusGateway } from '@/data/interfaces'
+import { MissingParamError, InvalidParamError, ServerError } from '@/presentation/errors'
+import { Order, OrderStatus } from '../models/order'
+import { IUpdateOrderStatusGateway, IUpdateOrderStatusUseCase } from '@/interfaces'
 import { mock } from 'jest-mock-extended'
 import MockDate from 'mockdate'
 
 const gateway = mock<IUpdateOrderStatusGateway>()
-const orderOutput: OrderOutput = {
-  id: 'anyOrderId',
-  orderNumber: 'anyOrderNumber',
-  clientId: 'anyClientId',
-  clientDocument: null,
-  status: 'finalized',
-  totalValue: 4500,
-  createdAt: new Date('2023-10-12 16:55:27'),
-  paidAt: new Date('2023-10-12 17:13:26'),
-  client: {
-    name: 'anyClientName',
-    email: 'anyClientEmail',
-    cpf: 'anyClientCpf'
-  },
-  products: [{
-    id: 'anyProductId',
-    name: 'anyProductName',
-    category: 'anyCategoryProduct',
-    price: 1700,
-    description: 'anyDescriptionProduct',
-    image: 'anyImageProduct',
-    amount: 3
-  }]
-}
 
 describe('UpdateOrderStatusUseCase', () => {
-  let sut: UpdateOrderStatusUseCase
+  let sut: IUpdateOrderStatusUseCase
+  let order: Order
   let input: any
 
   beforeEach(() => {
     sut = new UpdateOrderStatusUseCase(gateway)
+    order = {
+      orderNumber: 'anyOrderNumber',
+      status: OrderStatus.IN_PREPARATION,
+      totalValue: 8000,
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+      products: [{
+        id: 'anyProductId',
+        name: 'AnyProductName',
+        category: 'anyProductCategory',
+        price: 2500,
+        description: 'anyProductDescription',
+        image: 'anyProductImageUrl',
+        amount: 1
+      }, {
+        id: 'anyAnotherProductId',
+        name: 'AnyAnotherProductName',
+        category: 'anyAnotherProductCategory',
+        price: 1000,
+        description: 'anyAnotherProductDescription',
+        image: 'anyAnotherProductImageUrl',
+        amount: 1
+      }],
+      client: {
+        name: 'anyClientName',
+        email: "anyEmail@email.com",
+        cpf: "anyCPF",
+      }
+    }
     input = {
       orderNumber: 'anyOrderNumber',
-      status: 'received'
+      status: OrderStatus.IN_PREPARATION
     }
-    gateway.getByOrderNumber.mockResolvedValue(orderOutput)
+    gateway.getByOrderNumber.mockResolvedValue(order)
+    gateway.updateStatus.mockResolvedValue(order)
+    gateway.sendMessage.mockResolvedValue()
   })
 
   beforeAll(() => {
@@ -52,58 +60,56 @@ describe('UpdateOrderStatusUseCase', () => {
     MockDate.reset()
   })
 
-  test('should throws if orderNumber is not provided', async() => {
-    input.orderNumber = undefined
+  test('should throw if orderNumber is not provided', async() => {
+    const output = sut.execute({ ...input, orderNumber: undefined })
 
-    const output = sut.execute(input)
-
-    await expect(output).rejects.toThrowError(new MissingParamError('orderNumber'))
+    await expect(output).rejects.toThrow(new MissingParamError('orderNumber'))
   })
 
-  test('should throws if status is not provided', async() => {
-    input.status = undefined
+  test('should throw if status is not provided', async() => {
+    const output = sut.execute({ ...input, status: undefined })
 
-    const output = sut.execute(input)
-
-    await expect(output).rejects.toThrowError(new MissingParamError('status'))
+    await expect(output).rejects.toThrow(new MissingParamError('status'))
   })
 
-  test('should throws if status is invalid', async() => {
-    input.status = 'invalid-status'
+  test('should throw if status is invalid', async() => {
+    const output = sut.execute({ ...input, status: 'invalid-status' })
 
-    const output = sut.execute(input)
-
-    await expect(output).rejects.toThrowError(new InvalidParamError('status'))
+    await expect(output).rejects.toThrow(new InvalidParamError('status'))
   })
 
-  test('should throws if orderNumber is invalid', async () => {
+  test('should throw if orderNumber is invalid', async () => {
     gateway.getByOrderNumber.mockResolvedValueOnce(null)
 
     const output = sut.execute(input)
 
-    await expect(output).rejects.toThrowError(new InvalidParamError('orderNumber'))
+    await expect(output).rejects.toThrow(new InvalidParamError('orderNumber'))
   })
 
   test('should call gateway.updateStatus once and with correct values', async () => {
     await sut.execute(input)
 
     expect(gateway.updateStatus).toHaveBeenCalledTimes(1)
-    expect(gateway.updateStatus).toHaveBeenCalledWith({
-      orderNumber: 'anyOrderNumber',
-      status: 'received',
-      paidAt: new Date()
-    })
+    expect(gateway.updateStatus).toHaveBeenCalledWith('anyOrderNumber', OrderStatus.IN_PREPARATION)
   })
 
-  test('should call gateway.updateStatus once and with correct values without paidAt', async () => {
-    input.status = 'canceled'
+  test('should throw error if gateway.updateStatus doesnt return anything', async () => {
+    gateway.updateStatus.mockResolvedValueOnce(undefined as any)
+    const output = sut.execute(input)
+
+    await expect(output).rejects.toThrow(new ServerError())
+  })
+
+  test('should call gateway.sendMessage once and with correct values', async () => {
     await sut.execute(input)
 
-    expect(gateway.updateStatus).toHaveBeenCalledTimes(1)
-    expect(gateway.updateStatus).toHaveBeenCalledWith({
-      orderNumber: 'anyOrderNumber',
-      status: 'canceled',
-      paidAt: null
-    })
+    expect(gateway.sendMessage).toHaveBeenCalledTimes(1)
+    expect(gateway.sendMessage).toHaveBeenCalledWith(
+      process.env.SEND_MESSAGE_QUEUE,
+      JSON.stringify(input),
+      input.orderNumber
+    )
   })
+
 })
+
