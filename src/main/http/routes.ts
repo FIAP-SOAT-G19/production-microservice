@@ -6,8 +6,13 @@ import {
     makeGetOrderByNumberController,
     makeUpdateOrderStatusUseCaseController
 } from '../factories'
+import { makeLivenessProbeController, makeReadinessProbeController } from '@/interfaces/'
 
 const router = Router()
+
+router.get('/livenessProbe', expressRouteAdapter(makeLivenessProbeController()))
+router.get('/readinessProbe', expressRouteAdapter(makeReadinessProbeController()))
+
 
 router.delete('/production/:orderNumber', expressRouteAdapter(makeDeleteOrderController()))
 router.patch('/production/:orderNumber', expressRouteAdapter(makeUpdateOrderStatusUseCaseController()))
