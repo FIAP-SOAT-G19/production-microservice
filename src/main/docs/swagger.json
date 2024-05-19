@@ -1,0 +1,481 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Production-Microservice",
+    "description": "API de Microsserviço de Produção desenvolvida durante a Pós Tech da FIAP",
+    "version": "1.0.0",
+    "contact": {
+      "email": "tech-challenge@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Production Orders"
+    }
+  ],
+  "paths": {
+    "/productionOrder": {
+      "get": {
+        "tags": [
+          "Production Orders"
+        ],
+        "operationId": "get-production-order",
+        "description": "Rota que retorna pedidos cadastrados",
+        "summary": "Retorna os pedidos cadastrados",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "received"
+            }
+          },
+          {
+            "in": "query",
+            "name": "createdAtInitialDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "2023-10-01"
+            }
+          },
+          {
+            "in": "query",
+            "name": "createdAtEndDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "2023-10-25"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "orderNumber": {
+                            "type": "string",
+                            "example": "68GIKX-1697060786831"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "received"
+                          },
+                          "totalValue": {
+                            "type": "number",
+                            "example": 1900
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "example": "2023-10-16T15:00:18.547Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "example": "2023-10-16T15:00:18.547Z"
+                          },
+                          "client": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "example": "Maria da Silva"
+                              },
+                              "email": {
+                                "type": "string",
+                                "example": "maria@gmail.com"
+                              },
+                              "cpf": {
+                                "type": "string",
+                                "example": "14598787451"
+                              }
+                            }
+                          },
+                          "products": {
+                            "type": "array",
+                            "items": {
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "example": "86446705-9ebb-47aa-8178-1a7b232341c8"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "Product1"
+                                    },
+                                    "category": {
+                                      "type": "string",
+                                      "example": "snack"
+                                    },
+                                    "price": {
+                                      "type": "number",
+                                      "example": 900
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "example": "Product 1"
+                                    },
+                                    "image": {
+                                      "type": "string",
+                                      "example": "www.meuapp.com.br/images/product1.img"
+                                    },
+                                    "amount": {
+                                      "type": "number",
+                                      "example": 2
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "example": "86446705-9ebb-47aa-8178-1a7b232388s2"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "Product2"
+                                    },
+                                    "category": {
+                                      "type": "string",
+                                      "example": "snack"
+                                    },
+                                    "price": {
+                                      "type": "number",
+                                      "example": 1100
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "example": "Product 2"
+                                    },
+                                    "image": {
+                                      "type": "string",
+                                      "example": "www.meuapp.com.br/images/product2.img"
+                                    },
+                                    "amount": {
+                                      "type": "number",
+                                      "example": 1
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/productionOrder/{orderNumber}": {
+      "get": {
+        "tags": [
+          "Production Orders"
+        ],
+        "operationId": "get-order-number",
+        "summary": "Retorna informações de um pedido através de seu número.",
+        "description": "Rota que retorna informações de um pedido através de seu número.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderNumber",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "U0YA6T-1697468838547"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderNumber": {
+                      "type": "string",
+                      "example": "68GIKX-1697060786831"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "received"
+                    },
+                    "totalValue": {
+                      "type": "number",
+                      "example": 1900
+                    },
+                    "paidAt": {
+                      "type": "string",
+                      "example": "2023-10-16T15:07:18.547Z"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2023-10-16T15:00:18.547Z"
+                    },
+                    "client": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "Maria da Silva"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "maria@gmail.com"
+                        },
+                        "cpf": {
+                          "type": "string",
+                          "example": "14598787451"
+                        }
+                      }
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "86446705-9ebb-47aa-8178-1a7b232341c8"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Product1"
+                              },
+                              "category": {
+                                "type": "string",
+                                "example": "snack"
+                              },
+                              "price": {
+                                "type": "number",
+                                "example": 900
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "Product 1"
+                              },
+                              "image": {
+                                "type": "string",
+                                "example": "www.meuapp.com.br/images/product1.img"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "example": 2
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "86446705-9ebb-47aa-8178-1a7b232388s2"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Product2"
+                              },
+                              "category": {
+                                "type": "string",
+                                "example": "snack"
+                              },
+                              "price": {
+                                "type": "number",
+                                "example": 1100
+                              },
+                              "description": {
+                                "type": "string",
+                                "example": "Product 2"
+                              },
+                              "image": {
+                                "type": "string",
+                                "example": "www.meuapp.com.br/images/product2.img"
+                              },
+                              "amount": {
+                                "type": "number",
+                                "example": 1
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Production Orders"
+        ],
+        "operationId": "delete-order",
+        "description": "Deleta um pedido através de seu número.",
+        "summary": "Deleta um pedido através de seu número.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderNumber",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "U0YA6T-1697468838547"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Sem conteúdo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Production Orders"
+        ],
+        "operationId": "patch-order",
+        "description": "Atualiza o status do pedido através de seu número.",
+        "summary": "Atualiza o status do pedido através de seu número.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderNumber",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "U0YA6T-1697468838547"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "example": "received"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Sem conteúdo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

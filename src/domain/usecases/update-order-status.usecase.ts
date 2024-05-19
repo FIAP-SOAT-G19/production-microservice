@@ -4,6 +4,7 @@ import { OrderStatus } from '../models/order'
 
 export class UpdateOrderStatusUseCase implements IUpdateOrderStatusUseCase {
   constructor(private readonly gateway: IUpdateOrderStatusGateway) {}
+
   async execute (input: IUpdateOrderStatusUseCase.Input): Promise<void> {
     const { orderNumber, status } = input
     await this.validate(input)

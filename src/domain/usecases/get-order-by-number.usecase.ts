@@ -1,5 +1,5 @@
 import { IGetOrderByNumberGateway, IGetOrderByNumberUseCase } from '@/interfaces'
-import { InvalidParamError, MissingParamError } from '@/presentation/errors'
+import { NotFoundError, MissingParamError } from '@/presentation/errors'
 import { Order } from '../models/order'
 
 export class GetOrderByNumberUseCase implements IGetOrderByNumberUseCase {
@@ -12,7 +12,7 @@ export class GetOrderByNumberUseCase implements IGetOrderByNumberUseCase {
 
     const order = await this.gateway.getOrderByNumber(orderNumber)
     if (!order) {
-      throw new InvalidParamError('Order not found')
+      throw new NotFoundError('order')
     }
     return order
   }

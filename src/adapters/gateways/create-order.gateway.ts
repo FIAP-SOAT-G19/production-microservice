@@ -15,8 +15,8 @@ export class CreateOrderGateway implements ICreateOrderGateway {
     return await this.orderRepository.getByOrderNumber(orderNumber)
   }
 
-  async sendMessage (queueName: string, input: string, messageId: string): Promise<void> {
-    await this.queueService.sendMessage(queueName, input, messageId, messageId)
+  async sendMessage (queueName: string, input: string, messageId: string): Promise<boolean> {
+    return await this.queueService.sendMessage(queueName, input, messageId, messageId)
   }
 
 }

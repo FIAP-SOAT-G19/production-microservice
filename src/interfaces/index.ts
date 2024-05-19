@@ -1,4 +1,6 @@
 export * from './controllers/controllers.interface'
+export * from './controllers/liveness-controller.factory'
+export * from './controllers/readiness-controller.factory'
 export * from './gateways/create-order-gateway.interface'
 export * from './gateways/delete-order-gateway.interface'
 export * from './gateways/get-all-orders-gateway.interface'
