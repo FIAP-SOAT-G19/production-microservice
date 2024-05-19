@@ -9,12 +9,10 @@ module.exports = {
     '!<rootDir>/src/**/module-alias.ts',
     '!<rootDir>/src/**/routes.ts',
     '!<rootDir>/src/**/probes/*.ts',
-    '!<rootDir>/src/**/*.factory.ts',
-    '!<rootDir>/src/**/aws-sqs*.ts'
+    '!<rootDir>/src/**/*.factory.ts'
   ],
   coverageDirectory: 'coverage',
   coverageProvider: 'babel',
-  coverageReporters: ["text","html"],
   moduleNameMapper: {
     '@/(.+)': '<rootDir>/src/$1'
   },

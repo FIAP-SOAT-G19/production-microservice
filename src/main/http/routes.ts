@@ -14,9 +14,9 @@ router.get('/livenessProbe', expressRouteAdapter(makeLivenessProbeController()))
 router.get('/readinessProbe', expressRouteAdapter(makeReadinessProbeController()))
 
 
-router.delete('/production/:orderNumber', expressRouteAdapter(makeDeleteOrderController()))
-router.patch('/production/:orderNumber', expressRouteAdapter(makeUpdateOrderStatusUseCaseController()))
-router.get('/production/:orderNumber', expressRouteAdapter(makeGetOrderByNumberController()))
-router.get('/production', expressRouteAdapter(makeGetAllOrdersController()))
+router.delete('/productionOrder/:orderNumber', expressRouteAdapter(makeDeleteOrderController()))
+router.patch('/productionOrder/:orderNumber', expressRouteAdapter(makeUpdateOrderStatusUseCaseController()))
+router.get('/productionOrder/:orderNumber', expressRouteAdapter(makeGetOrderByNumberController()))
+router.get('/productionOrder', expressRouteAdapter(makeGetAllOrdersController()))
 
 export { router }

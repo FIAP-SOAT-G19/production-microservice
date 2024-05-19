@@ -24,7 +24,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /api/v1/livenessProbe
-              port: 3000
+              port: 3003
             initialDelaySeconds: 15
             periodSeconds: 10
             successThreshold: 1
@@ -33,7 +33,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /api/v1/readinessProbe
-              port: 3000
+              port: 3003
             initialDelaySeconds: 15
             periodSeconds: 10
             successThreshold: 1
@@ -60,6 +60,17 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: aws-region
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: credentials
+                  key: AWS_ACCESS_KEY
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: credentials
+                  key: AWS_SECRET_KEY
+
             
 ---
 apiVersion: autoscaling/v2
@@ -101,7 +112,7 @@ spec:
     app: api
   ports:
     - protocol: TCP
-      port: 3000
-      targetPort: 3000
-      nodePort: 30000
+      port: 3003
+      targetPort: 3003
+      nodePort: 30003
   type: LoadBalancer
