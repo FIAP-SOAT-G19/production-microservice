@@ -29,9 +29,11 @@ export class ServerError extends Error {
   }
 }
 
-export class OrderNotFoundError extends Error {
+export class NotFoundError extends Error {
   statusCode = 404
-  constructor() {
-    super('Order not found error')
+  constructor(param: string) {
+    super(`Not found: ${param}`)
+    this.name = 'NotFoundError'
+    this.message = `Not found: ${param}`
   }
 }

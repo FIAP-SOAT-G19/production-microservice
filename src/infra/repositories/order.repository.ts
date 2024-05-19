@@ -1,5 +1,5 @@
 import { GetAllOrdersInput, GetAllOrdersOutput, IOrderRepository, OrderOutput } from '@/interfaces'
-import { DynamoDBClientHelper } from '../dynamodb/dynamodb-helper'
+import { DynamoDBClientHelper } from '../dynamodb/dynamodb.helper'
 import { Order } from '@/domain/models/order'
 
 export class OrderRepository implements IOrderRepository {

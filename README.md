@@ -1,17 +1,19 @@
-# 💬 Tech Challenge
+# 💬 Tech Challenge - Production Microservice
 
 ## ✳️ Sobre
 O **Tech Challenge** é um projeto de um sistema de autoatendimento de fast food, que é composto por uma série de dispositivos e interfaces que permitem aos clientes selecionar e fazer pedidos sem precisar interagir com um atendente.
+
+Neste repositório está contido o **Microsserviço de Produção**, o qual consiste em uma API que será acessada pelos funcionários do restaurante para receber, visualizar e atualizar o status dos pedidos.
 
 ---
 
 ## 🛠 Ferramentas Utilizadas
 - [Node](https://nodejs.dev)
 - [Express](https://expressjs.com/pt-br/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Prisma](https://www.prisma.io/)
 - [Jest](https://jestjs.io)
 - [k8s](https://kubernetes.io/pt-br/)
+- [AWS DynamoDB](https://aws.amazon.com/pt/dynamodb/)
+- [AWS SQS](https://aws.amazon.com/pt/sqs/)
 ---
 
 ## 💻 Clonando o repositório
@@ -19,7 +21,7 @@ O **Tech Challenge** é um projeto de um sistema de autoatendimento de fast food
 - Clone o projeto
 
   ```bash
-  git clone https://github.com/FIAP-SOAT-G19/tech-challenge.git
+  git clone https://github.com/FIAP-SOAT-G19/production-microservice.git
   ````
 ---
 
@@ -28,20 +30,27 @@ Existe o arquivo `.env.example` com todas as variáveis utilizadas para rodar o 
 ---
 
 ## Arquitetura do projeto
-![Arquitetura do Projeto](./assets/images/architecture.jpg)
+![Arquitetura do Projeto](./assets/images/arch-ms.png)
+
+## 🧪 Testes:
+- Evidência cobertura de testes unitários
+![Image](./assets/images/test-coverage.png)
+  ```bash
+  npm run test:coverage
+  ```
+
+- Evidência teste BDD
+![Image](./assets/images/BDD-production.png)
+  ```bash
+  npm run test:bdd
+  ```
+---
 
 ## ▶️ Executando o projeto
 - Execute os seguintes comandos:
   ```bash
-    kubectl apply -f k8s/db-deployment.yaml
     kubectl apply -f k8s/api-deployment.yaml
     kubectl apply -f k8s/metrics.yaml
-  ```
-
-- Utilize os comandos abaixo para encaminhar as conexões das portas locais para a portas dos pod's Kubernetes (o segundo comando é opcional)
-  ```bash
-    kubectl port-forward service/api-svc 3000:3000 &
-    kubectl port-forward service/database-svc 5432:5432 &
   ```
 
 - O Backend iniciará em [http://localhost:3000](http://localhost:3000)

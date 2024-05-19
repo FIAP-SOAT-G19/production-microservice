@@ -42,19 +42,19 @@ describe('GetAllOrdersPresenter', () => {
   test('should filter by createdAt date and ordenate by status if date filter is sent', async () => {
     const orderInput: GetAllOrdersOutput = [{
         ...defaultOrderInput,
-        status: OrderStatus.RECEIVED,
+        status: OrderStatus.IN_PREPARATION,
         createdAt: '2024-01-11T12:00:00.000Z'
     }, {
         ...defaultOrderInput,
-        status: OrderStatus.RECEIVED,
+        status: OrderStatus.PREPARED,
         createdAt: '2024-01-12T12:00:00.000Z'
     }, {
         ...defaultOrderInput,
-        status: OrderStatus.IN_PREPARATION,
+        status: OrderStatus.RECEIVED,
         createdAt: '2024-01-13T12:00:00.000Z'
     }, {
         ...defaultOrderInput,
-        status: OrderStatus.IN_PREPARATION,
+        status: OrderStatus.RECEIVED,
         createdAt: '2024-01-12T12:00:00.000Z'
     }]
     
@@ -65,11 +65,11 @@ describe('GetAllOrdersPresenter', () => {
 
     expect(output).toEqual([{
         ...defaultOrderInput,
-        status: OrderStatus.IN_PREPARATION,
+        status: OrderStatus.PREPARED,
         createdAt: '2024-01-12T12:00:00.000Z'
     }, {
         ...defaultOrderInput,
-        status: OrderStatus.RECEIVED,
+        status: OrderStatus.IN_PREPARATION,
         createdAt: '2024-01-11T12:00:00.000Z'
     }, {
         ...defaultOrderInput,
@@ -151,7 +151,7 @@ describe('GetAllOrdersPresenter', () => {
         createdAt: '2024-01-11T12:00:00.164Z'
     }, {
         ...defaultOrderInput,
-        status: OrderStatus.IN_PREPARATION,
+        status: OrderStatus.RECEIVED,
         createdAt: '2024-01-11T12:00:00.169Z'
     }]
     
@@ -167,12 +167,12 @@ describe('GetAllOrdersPresenter', () => {
         createdAt: '2024-01-11T12:00:00.168Z'
     }, {
         ...defaultOrderInput,
-        status: OrderStatus.IN_PREPARATION,
-        createdAt: '2024-01-11T12:00:00.169Z'
+        status: OrderStatus.RECEIVED,
+        createdAt: '2024-01-11T12:00:00.166Z'
     }, {
         ...defaultOrderInput,
         status: OrderStatus.RECEIVED,
-        createdAt: '2024-01-11T12:00:00.166Z'
+        createdAt: '2024-01-11T12:00:00.169Z'
     }])
   })
 
@@ -216,12 +216,20 @@ describe('GetAllOrdersPresenter', () => {
     }, {
         ...defaultOrderInput,
         status: OrderStatus.FINALIZED,
+        createdAt: null as any
+    }, {
+        ...defaultOrderInput,
+        status: OrderStatus.FINALIZED,
         createdAt: '2024-01-11T12:00:00.164Z'
     }]
     
     const output = sut.createOrdenation(orderInput, { status: OrderStatus.FINALIZED })
 
     expect(output).toEqual([{
+        ...defaultOrderInput,
+        status: OrderStatus.FINALIZED,
+        createdAt: null as any
+    }, {
         ...defaultOrderInput,
         status: OrderStatus.FINALIZED,
         createdAt: '2024-01-11T12:00:00.164Z'

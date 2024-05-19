@@ -4,8 +4,8 @@ const orderSchema = Joi.object({
   orderNumber: Joi.string().required(),
   status: Joi.string().required(),
   totalValue: Joi.number().required(),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().allow(null),
+  createdAt: Joi.string().required(),
+  updatedAt: Joi.string().allow(null),
   client: Joi.object({
     name: Joi.string().allow(null),
     email: Joi.string().allow(null),

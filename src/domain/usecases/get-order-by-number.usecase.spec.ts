@@ -1,67 +1,73 @@
-import { InvalidParamError, MissingParamError } from '@/infra/shared'
+import { NotFoundError, MissingParamError } from '@/presentation/errors'
 import { GetOrderByNumberUseCase } from './get-order-by-number.usecase'
 import { mock } from 'jest-mock-extended'
-import { OrderOutput } from './orders.types'
-import { IGetOrderByNumberGateway } from '@/data/interfaces'
+import { Order } from '../models/order'
+import { IGetOrderByNumberGateway, IGetOrderByNumberUseCase } from '@/interfaces'
 
 const gateway = mock<IGetOrderByNumberGateway>()
-const orderOutput: OrderOutput = {
-  id: 'anyOrderId',
-  orderNumber: 'anyOrderNumber',
-  clientId: 'anyClientId',
-  clientDocument: null,
-  status: 'finalized',
-  totalValue: 4500,
-  createdAt: new Date('2023-10-12 16:55:27'),
-  paidAt: new Date('2023-10-12 17:13:26'),
-  client: {
-    name: 'anyClientName',
-    email: 'anyClientEmail',
-    cpf: 'anyClientCpf'
-  },
-  products: [{
-    id: 'anyProductId',
-    name: 'anyProductName',
-    category: 'anyCategoryProduct',
-    price: 1700,
-    description: 'anyDescriptionProduct',
-    image: 'anyImageProduct',
-    amount: 3
-  }]
-}
 
 describe('GetOrderByNumberUseCase', () => {
-  let sut: GetOrderByNumberUseCase
+  let sut: IGetOrderByNumberUseCase
+  let order: Order
 
   beforeEach(() => {
     sut = new GetOrderByNumberUseCase(gateway)
-    gateway.getByOrderNumber.mockResolvedValue(orderOutput)
+    order = {
+      orderNumber: 'anyOrderNumber',
+      status: 'received',
+      totalValue: 8000,
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+      products: [{
+        id: 'anyProductId',
+        name: 'AnyProductName',
+        category: 'anyProductCategory',
+        price: 2500,
+        description: 'anyProductDescription',
+        image: 'anyProductImageUrl',
+        amount: 1
+      }, {
+        id: 'anyAnotherProductId',
+        name: 'AnyAnotherProductName',
+        category: 'anyAnotherProductCategory',
+        price: 1000,
+        description: 'anyAnotherProductDescription',
+        image: 'anyAnotherProductImageUrl',
+        amount: 1
+      }],
+      client: {
+        name: 'anyClientName',
+        email: "anyEmail@email.com",
+        cpf: "anyCPF",
+      }
+    }
+    gateway.getOrderByNumber.mockResolvedValue(order)
   })
 
   test('should throw if orderNumber does not provided', async () => {
     const output = sut.execute(null as any)
 
-    await expect(output).rejects.toThrowError(new MissingParamError('orderNumber'))
+    await expect(output).rejects.toThrow(new MissingParamError('orderNumber'))
   })
 
-  test('should call gateway.getByOrderNumbergetByNumber once and with correct orderNumber', async () => {
+  test('should call gateway.getOrderByNumbergetByNumber once and with correct orderNumber', async () => {
     await sut.execute('anyOrderNumber')
 
-    expect(gateway.getByOrderNumber).toHaveBeenCalledTimes(1)
-    expect(gateway.getByOrderNumber).toHaveBeenCalledWith('anyOrderNumber')
+    expect(gateway.getOrderByNumber).toHaveBeenCalledTimes(1)
+    expect(gateway.getOrderByNumber).toHaveBeenCalledWith('anyOrderNumber')
   })
 
   test('should return a order', async () => {
     const output = await sut.execute('anyOrderNumber')
 
-    expect(output).toEqual(orderOutput)
+    expect(output).toEqual(order)
   })
 
-  test('should throws if orderNumber is invalid', async () => {
-    gateway.getByOrderNumber.mockResolvedValueOnce(null)
+  test('should throw if orderNumber is invalid', async () => {
+    gateway.getOrderByNumber.mockResolvedValueOnce(null)
 
     const output = sut.execute('anyOrderNumber')
 
-    await expect(output).rejects.toThrowError(new InvalidParamError('Order not found'))
+    await expect(output).rejects.toThrow(new NotFoundError('order'))
   })
 })
