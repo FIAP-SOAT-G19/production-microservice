@@ -40,7 +40,7 @@ Existe o arquivo `.env.example` com todas as variáveis utilizadas para rodar o 
   ```
 
 - Evidência teste BDD
-![Image](./assets/images/BDD-production.png)
+![Image](./assets/images/bdd-production.png)
   ```bash
   npm run test:bdd
   ```
