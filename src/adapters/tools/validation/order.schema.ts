@@ -13,14 +13,12 @@ const orderSchema = Joi.object({
   }).allow(null),
   products: Joi.array().items(
     Joi.object({
-      id: Joi.string().required(),
       name: Joi.string().required(),
       category: Joi.string().required(),
       price: Joi.number().required(),
-      description: Joi.string(),
+      description: Joi.string().allow(null),
       image: Joi.string().allow(null),
-      amount: Joi.number().required(),
-      createdAt: Joi.string(),
+      amount: Joi.number().required()
     }).min(1)
   )
 })
