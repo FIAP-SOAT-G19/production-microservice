@@ -26,11 +26,9 @@ describe('JoiValidatorSchemaAdapter', () => {
         updatedAt: null,
         products: [
           {
-            id: 'product1',
             name: 'Product 1',
             category: 'Category 1',
             price: 500,
-            description: 'Description 1',
             image: 'ImageURL1',
             amount: 2
           }
