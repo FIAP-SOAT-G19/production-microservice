@@ -1,4 +1,4 @@
-# 💬 Tech Challenge - Production Microservice
+# 💬 Tech Challenge - Microsserviço de Produção
 
 ## ✳️ Sobre
 O **Tech Challenge** é um projeto de um sistema de autoatendimento de fast food, que é composto por uma série de dispositivos e interfaces que permitem aos clientes selecionar e fazer pedidos sem precisar interagir com um atendente.
@@ -49,7 +49,7 @@ Existe o arquivo `.env.example` com todas as variáveis utilizadas para rodar o 
 ## ▶️ Executando o projeto
 - Execute os seguintes comandos:
   ```bash
-    kubectl apply -f k8s/api-deployment.yaml
+    kubectl apply -f k8s/api-production-deployment.yaml
     kubectl apply -f k8s/metrics.yaml
   ```
 
