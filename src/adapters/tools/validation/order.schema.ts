@@ -7,9 +7,9 @@ const orderSchema = Joi.object({
   createdAt: Joi.string().required(),
   updatedAt: Joi.string().allow(null),
   client: Joi.object({
-    name: Joi.string().allow(null),
-    email: Joi.string().allow(null),
-    cpf: Joi.string().allow(null),
+    name: Joi.string().allow(null).allow(''),
+    email: Joi.string().allow(null).allow(''),
+    cpf: Joi.string().allow(null).allow(''),
   }).allow(null),
   products: Joi.array().items(
     Joi.object({
