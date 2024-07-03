@@ -40,16 +40,21 @@ spec:
             failureThreshold: 2
             timeoutSeconds: 10
           env:
-            - name: RECEIVE_MESSAGE_QUEUE
+            - name: APPROVED_PAYMENT_QUEUE
               valueFrom:
                 secretKeyRef:
                   name: api-production-secrets
-                  key: receive-message-queue
-            - name: SEND_MESSAGE_QUEUE
+                  key: approved-payment-queue
+            - name: UPDATE_ORDER_QUEUE
               valueFrom:
                 secretKeyRef:
                   name: api-production-secrets
-                  key: send-message-queue
+                  key: update-order-queue
+            - name: CANCEL_ORDER_QUEUE
+              valueFrom:
+                secretKeyRef:
+                  name: api-production-secrets
+                  key: cancel-order-queue
             - name: TABLE_NAME
               valueFrom:
                 secretKeyRef:
@@ -103,8 +108,9 @@ metadata:
   name: api-production-secrets
 type: Opaque
 stringData:
-  receive-message-queue: https://sqs.us-east-1.amazonaws.com/471112746092/approved_payment.fifo
-  send-message-queue: https://sqs.us-east-1.amazonaws.com/471112746092/update_order.fifo
+  approved-payment-queue: https://sqs.us-east-1.amazonaws.com/471112746092/approved_payment.fifo
+  update-order-queue: https://sqs.us-east-1.amazonaws.com/471112746092/update_order.fifo
+  cancel-order-queue: https://sqs.us-east-1.amazonaws.com/471112746092/cancel_order.fifo
   table-name: production
   aws-region: us-east-1
   port: '3003'

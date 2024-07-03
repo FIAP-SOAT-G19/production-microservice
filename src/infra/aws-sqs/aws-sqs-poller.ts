@@ -8,7 +8,7 @@ export class AWSSQSPoller implements IQueuePoller {
   ) {}
 
   async processMessagesOnQueue(): Promise<void> {
-    const queueName = process.env.RECEIVE_MESSAGE_QUEUE
+    const queueName = process.env.APPROVED_PAYMENT_QUEUE
     
     if (queueName) {
       while (true) {

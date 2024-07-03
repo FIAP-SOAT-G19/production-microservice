@@ -38,7 +38,7 @@ export class AWSSQSService implements IQueueService {
       WaitTimeSeconds: 20,
       AttributeNames: ['All']
     }
-
+    console.log(queueName)
     const command = new ReceiveMessageCommand(input)
     const messages = await this.client.send(command)
 

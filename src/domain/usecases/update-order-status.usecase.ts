@@ -11,9 +11,12 @@ export class UpdateOrderStatusUseCase implements IUpdateOrderStatusUseCase {
 
     const updatedOrder = await this.gateway.updateStatus(orderNumber, status)
 
-    if (!updatedOrder) throw new ServerError()
+    if (!updatedOrder || status === OrderStatus.CANCELED) {
+      await this.sendMessagesToCancelOrder(orderNumber)
+      throw new ServerError()
+    }
 
-    await this.sendMessage({
+    await this.sendMessageToUpdateOrder({
       orderNumber,
       status: updatedOrder.status
     })
@@ -40,12 +43,22 @@ export class UpdateOrderStatusUseCase implements IUpdateOrderStatusUseCase {
     }
   }
 
-  private async sendMessage(input: IUpdateOrderStatusUseCase.Input): Promise<void> {
+  private async sendMessageToUpdateOrder(input: IUpdateOrderStatusUseCase.Input): Promise<void> {
     const { orderNumber, status } = input
 
-    const queueName = process.env.SEND_MESSAGE_QUEUE as string
+    const queueName = process.env.UPDATE_ORDER_QUEUE as string
     const messageBody = JSON.stringify({ orderNumber, status })
 
     await this.gateway.sendMessage(queueName, messageBody, orderNumber)
+  }
+
+  private async sendMessagesToCancelOrder(orderNumber: string): Promise<void> {
+    const orderQueue = process.env.UPDATE_ORDER_QUEUE as string
+    const paymentQueue = process.env.CANCEL_ORDER_QUEUE as string
+    const messageBody = JSON.stringify({ orderNumber, status: OrderStatus.CANCELED })
+
+    await this.gateway.sendMessage(orderQueue, messageBody, orderNumber).then(async () => {
+      await this.gateway.sendMessage(paymentQueue, messageBody, orderNumber)
+    })
   }
 }

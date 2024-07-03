@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand, DeleteCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { Order } from '@/domain/models/order';
-import {  GetAllOrdersInput } from '@/interfaces';
+import { GetAllOrdersInput } from '@/interfaces';
 
 export class DynamoDBClientHelper {
     private readonly docClient: DynamoDBDocumentClient

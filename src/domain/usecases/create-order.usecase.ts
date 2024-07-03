@@ -1,4 +1,4 @@
-import { SchemaValidationError, ServerError, InvalidParamError } from '@/presentation/errors'
+import { SchemaValidationError, ServerError } from '@/presentation/errors'
 import { ICreateOrderUseCase, ISchemaValidator, ICreateOrderGateway } from '@/interfaces'
 import { Order, OrderStatus } from '../models/order'
 
@@ -12,17 +12,25 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     
     const orderToSave = this.buildOrder(input)
     await this.validate(orderToSave)
-    await this.getOrderByNumber(orderToSave.orderNumber)
 
-    const createdOrder = await this.saveOrder(orderToSave)
-    if (!createdOrder) throw new ServerError()
-      
-    const messageSent = await this.sendMessage(createdOrder)
-    if (!messageSent) throw new ServerError()
+    const orderAlreadyExists = await this.getOrderByNumber(orderToSave.orderNumber)
+
+    if (!orderAlreadyExists) {
+      try {
+        await this.saveOrder(orderToSave).then(async (createdOrder) => {
+          console.log(createdOrder)
+          await this.sendMessageToUpdateOrder(createdOrder)
+        }).catch(() => {
+          throw new ServerError()
+        })
+      } catch {
+        await this.sendMessagesToCancelOrder(orderToSave.orderNumber)
+        throw new ServerError()
+      } 
+    }
   }
 
   private buildOrder(input: any): Order {
-
     const { orderNumber, totalValue, client, products } = input
     const orderToSave = {
       orderNumber,
@@ -51,9 +59,9 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     }
   }
 
-  private async getOrderByNumber(orderNumber: string): Promise<void> {
-    const orderAlreadyExists = await this.gateway.getOrderByNumber(orderNumber)
-    if (orderAlreadyExists) throw new InvalidParamError('Order already exists')
+  private async getOrderByNumber(orderNumber: string): Promise<Order|null> {
+    const existentOrder = await this.gateway.getOrderByNumber(orderNumber)
+    return existentOrder || null
   }
 
   private async saveOrder(input: Order): Promise<Order> {
@@ -61,13 +69,24 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     return createdOrder
   }
 
-  private async sendMessage(input: Order): Promise<boolean> {
+  private async sendMessageToUpdateOrder(input: Order): Promise<boolean> {
     const { orderNumber, status } = input
 
-    const queueName = process.env.SEND_MESSAGE_QUEUE as string
+    const queueName = process.env.UPDATE_ORDER_QUEUE as string
     const messageBody = JSON.stringify({ orderNumber, status })
 
     return await this.gateway.sendMessage(queueName, messageBody, orderNumber)
+  }
+
+  private async sendMessagesToCancelOrder(orderNumber: string): Promise<void> {
+    const orderQueue = process.env.UPDATE_ORDER_QUEUE as string
+    const paymentQueue = process.env.CANCEL_ORDER_QUEUE as string
+    const messageBody = JSON.stringify({ orderNumber, status: OrderStatus.CANCELED })
+
+    await this.gateway.sendMessage(orderQueue, messageBody, orderNumber)
+    .then(async () => {
+      await this.gateway.sendMessage(paymentQueue, messageBody, orderNumber)
+    })
   }
 }
 

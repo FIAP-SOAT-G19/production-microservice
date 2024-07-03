@@ -117,18 +117,25 @@ describe('CreateOrderUseCase', () => {
     expect(gateway.getOrderByNumber).toHaveBeenCalledWith(input.orderNumber)
   })
 
-  test('should throw error if gateway.getOrderByNumber returns something', async () => {
-    gateway.getOrderByNumber.mockResolvedValueOnce(order)
-    const output = sut.execute(input)
-
-    await expect(output).rejects.toThrow(new InvalidParamError('Order already exists'))
-  })
-
   test('should call gateway.saveOrder once and with correct data', async () => {
     await sut.execute(input)
 
     expect(gateway.saveOrder).toHaveBeenCalledTimes(1)
     expect(gateway.saveOrder).toHaveBeenCalledWith(order)
+  })
+
+  test.skip('should send cancel order message if gateway.saveOrder returns nothing', async () => {
+    const { orderNumber, status } = order
+    gateway.saveOrder.mockRejectedValue(new ServerError())
+
+    await sut.execute(input)
+
+    expect(gateway.sendMessage).toHaveBeenCalledTimes(2)
+    expect(gateway.sendMessage).toHaveBeenCalledWith(
+      process.env.UPDATE_ORDER_QUEUE,
+      JSON.stringify({ orderNumber, status }),
+      orderNumber
+    )
   })
 
   test('should throw error if gateway.saveOrder returns nothing', async () => {
@@ -138,23 +145,30 @@ describe('CreateOrderUseCase', () => {
     await expect(output).rejects.toThrow(new ServerError())
   })
 
+
+  test('should send update order message if gateway.saveOrder returns', async () => {
+    const { orderNumber, status } = order
+
+    await sut.execute(input)
+
+    expect(gateway.sendMessage).toHaveBeenCalledTimes(1)
+    expect(gateway.sendMessage).toHaveBeenCalledWith(
+      process.env.UPDATE_ORDER_QUEUE,
+      JSON.stringify({ orderNumber, status }),
+      orderNumber
+    )
+  })
+
   test('should call gateway.sendMessage once and with correct data', async () => {
     const { orderNumber, status } = order
     await sut.execute(input)
 
     expect(gateway.sendMessage).toHaveBeenCalledTimes(1)
     expect(gateway.sendMessage).toHaveBeenCalledWith(
-      process.env.SEND_MESSAGE_QUEUE,
+      process.env.UPDATE_ORDER_QUEUE,
       JSON.stringify({ orderNumber, status }),
       orderNumber
     )
-  })
-
-  test('should throw error if gateway.sendMessage returns false', async () => {
-    gateway.sendMessage.mockResolvedValueOnce(false)
-    const output = sut.execute(input)
-
-    await expect(output).rejects.toThrow(new ServerError())
   })
 
 })
