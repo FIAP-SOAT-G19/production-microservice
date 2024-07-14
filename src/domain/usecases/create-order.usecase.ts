@@ -18,7 +18,6 @@ export class CreateOrderUseCase implements ICreateOrderUseCase {
     if (!orderAlreadyExists) {
       try {
         await this.saveOrder(orderToSave).then(async (createdOrder) => {
-          console.log(createdOrder)
           await this.sendMessageToUpdateOrder(createdOrder)
         }).catch(() => {
           throw new ServerError()

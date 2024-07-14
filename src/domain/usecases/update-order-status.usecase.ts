@@ -13,7 +13,7 @@ export class UpdateOrderStatusUseCase implements IUpdateOrderStatusUseCase {
 
     if (!updatedOrder || status === OrderStatus.CANCELED) {
       await this.sendMessagesToCancelOrder(orderNumber)
-      throw new ServerError()
+      if (!updatedOrder) throw new ServerError()
     }
 
     await this.sendMessageToUpdateOrder({

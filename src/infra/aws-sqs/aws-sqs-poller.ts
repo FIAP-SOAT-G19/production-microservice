@@ -11,7 +11,6 @@ export class AWSSQSPoller implements IQueuePoller {
     const queueName = process.env.APPROVED_PAYMENT_QUEUE
     
     if (queueName) {
-      console.log(queueName)
       while (true) {
         try {
           const messages = await this.receiveMessage(queueName)
