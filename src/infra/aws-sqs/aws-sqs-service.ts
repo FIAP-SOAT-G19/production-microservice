@@ -27,6 +27,7 @@ export class AWSSQSService implements IQueueService {
 
     const command = new SendMessageCommand(input)
     const sendMessage = await this.client.send(command)
+    logger.info(`Publishing message on queue\nQueueName: ${queueName}\nMessage: ${message}`)
 
     return !!sendMessage
   }
