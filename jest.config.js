@@ -27,6 +27,7 @@ module.exports = {
 }
 
 process.env = Object.assign(process.env, {
-  SEND_MESSAGE_QUEUE: 'mock_value',
-  RECEIVE_MESSAGE_QUEUE: 'mock_value'
+  APPROVED_PAYMENT_QUEUE: 'mock_value',
+  UPDATE_ORDER_QUEUE: 'mock_value',
+  CANCEL_ORDER_QUEUE: 'mock_value'
 });

@@ -105,7 +105,7 @@ describe('UpdateOrderStatusUseCase', () => {
 
     expect(gateway.sendMessage).toHaveBeenCalledTimes(1)
     expect(gateway.sendMessage).toHaveBeenCalledWith(
-      process.env.SEND_MESSAGE_QUEUE,
+      process.env.UPDATE_ORDER_QUEUE,
       JSON.stringify(input),
       input.orderNumber
     )
